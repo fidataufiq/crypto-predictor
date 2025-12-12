@@ -1,100 +1,120 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Github, Instagram, Mail, Terminal, Code2, Cpu, Database } from "lucide-react";
+import { ArrowLeft, Github, Instagram, Mail, Terminal, Code2, Cpu, Database, Bot, Coffee, Heart, AlertCircle } from "lucide-react";
 
 export default function AboutPage() {
   const router = useRouter();
 
   return (
     <main className="min-h-screen bg-black text-white flex items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-violet-500/30">
-      {/* === BACKGROUND YANG BARU & WAH === */}
-
-      {/* 1. Grid Pattern (Efek Lantai Digital/Matrix) */}
+      {/* === BACKGROUND STATIC MATRIX === */}
       <div className="absolute inset-0 z-0 h-full w-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-
-      {/* 2. Spotlight Atas (Efek Cahaya dari 'Langit') */}
       <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-violet-500 opacity-20 blur-[100px]"></div>
-
-      {/* 3. Glowing Orbs (Efek Misterius di Pojok) */}
-      <div className="absolute top-1/4 left-[-100px] w-[300px] h-[300px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none animate-pulse" />
-      <div className="absolute bottom-0 right-[-100px] w-[400px] h-[400px] bg-fuchsia-600/10 rounded-full blur-[100px] pointer-events-none" />
-
-      {/* =================================== */}
 
       {/* Main Card */}
       <div className="w-full max-w-2xl relative z-10">
-        {/* Navigation Back */}
         <button onClick={() => router.back()} className="mb-8 flex items-center gap-2 text-gray-500 hover:text-white transition-all hover:-translate-x-1 text-xs uppercase tracking-widest font-bold group">
           <ArrowLeft size={16} className="text-violet-500 group-hover:text-white transition-colors" />
           Return to Terminal
         </button>
 
-        {/* Glass Card Container */}
-        <div className="bg-[#050505]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden ring-1 ring-white/5">
-          {/* Efek Garis Laser di atas Card */}
+        <div className="bg-[#050505]/80 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden ring-1 ring-white/5">
           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-violet-500 to-transparent opacity-50"></div>
 
-          {/* Profile / Avatar Section */}
-          <div className="flex flex-col items-center text-center mb-10 relative">
-            {/* Avatar Glow Behind */}
+          {/* Profile Header */}
+          <div className="flex flex-col items-center text-center mb-8 relative">
             <div className="absolute top-0 w-24 h-24 bg-violet-500/30 blur-[40px] rounded-full"></div>
-
-            <div className="w-24 h-24 bg-[#0a0a0a] rounded-2xl border border-white/10 flex items-center justify-center mb-6 shadow-2xl relative z-10 transform rotate-3 hover:rotate-0 transition-all duration-500">
+            <div className="w-24 h-24 bg-[#0a0a0a] rounded-2xl border border-white/10 flex items-center justify-center mb-6 shadow-2xl relative z-10">
               <Terminal size={36} className="text-violet-400" />
             </div>
 
             <h1 className="text-3xl md:text-5xl font-black tracking-tighter mb-2 text-white drop-shadow-lg">
               THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">ARCHITECT</span>
             </h1>
-            <p className="text-[10px] text-gray-400 tracking-[0.3em] uppercase font-bold border-b border-white/10 pb-4">System Creator & Logic Designer</p>
+            <p className="text-[10px] text-gray-400 tracking-[0.3em] uppercase font-bold border-b border-white/10 pb-4">Human Vision • Machine Execution</p>
           </div>
 
-          {/* The Narrative (Misterius tapi Wah) */}
-          <div className="space-y-6 text-center max-w-lg mx-auto mb-12">
-            <p className="text-gray-300 leading-relaxed font-light text-sm md:text-base italic">"Data hanyalah kebisingan tanpa struktur. Di sini, saya membangun kerangka untuk melihat masa depan."</p>
-            <p className="text-gray-400 leading-relaxed font-light text-sm">
-              Platform ini adalah manifestasi dari obsesi terhadap pola matematika dan psikologi pasar. <br />
-              <span className="text-violet-300">No signals provided by human emotion. Only pure code.</span>
-            </p>
+          {/* Narasi Utama */}
+          <div className="space-y-8 text-center max-w-lg mx-auto mb-12">
+            {/* The Logic */}
+            <div>
+              <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-2 flex items-center justify-center gap-2">
+                <Database size={12} className="text-blue-400" /> The Logic
+              </h3>
+              <p className="text-gray-400 leading-relaxed font-light text-sm">
+                Pasar digerakkan oleh dua hal: <span className="text-gray-200">Momentum</span> dan <span className="text-gray-200">Emosi</span>. Sistem ini tidak menebak; ia membedah struktur pasar menggunakan indikator teruji (RSI, MACD,
+                SMA) untuk memisahkan sinyal valid dari sekadar kebisingan (noise).
+              </p>
+            </div>
+
+            {/* The Symbiosis */}
+            <div className="bg-white/[0.03] p-4 rounded-xl border border-white/5">
+              <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-2 flex items-center justify-center gap-2">
+                <Bot size={12} className="text-fuchsia-400" /> The Symbiosis
+              </h3>
+              <p className="text-gray-400 leading-relaxed font-light text-sm italic">
+                "Karya ini adalah kolaborasi antara Logika Manusia dan Kecerdasan Buatan. Tanpa AI, visi arsitektural ini mungkin tak akan mencapai tingkat presisi dan estetika yang Anda lihat sekarang.
+                <span className="text-violet-300 not-italic"> I code the logic, AI polishes the soul.</span>"
+              </p>
+            </div>
           </div>
 
-          {/* Tech Stack Grid (Skills) */}
-          <div className="grid grid-cols-3 gap-3 mb-12">
-            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex flex-col items-center justify-center gap-2 hover:bg-white/[0.08] transition-all group cursor-default">
-              <Code2 size={18} className="text-gray-500 group-hover:text-blue-400 transition-colors" />
-              <span className="text-[9px] font-bold uppercase text-gray-500 group-hover:text-gray-300">Clean Arch</span>
+          {/* === SECTION BARU: PESAN DARI DEVELOPER (Updated: Limitasi Koin) === */}
+          <div className="mb-10 p-6 md:p-8 rounded-2xl bg-gradient-to-b from-white/[0.02] to-transparent border border-white/10 text-left relative overflow-hidden">
+            {/* Header Section */}
+            <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/5">
+              <AlertCircle size={18} className="text-yellow-500/80" />
+              <span className="text-xs font-bold text-gray-300 uppercase tracking-widest">Developer's Note</span>
             </div>
-            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex flex-col items-center justify-center gap-2 hover:bg-white/[0.08] transition-all group cursor-default">
-              <Cpu size={18} className="text-gray-500 group-hover:text-violet-400 transition-colors" />
-              <span className="text-[9px] font-bold uppercase text-gray-500 group-hover:text-gray-300">Algorithmic</span>
+
+            {/* Isi Surat - Mengalir dan Jujur */}
+            <div className="space-y-4 text-sm text-gray-400 leading-relaxed font-light">
+              <p>Halo, Sahabat Trader. Terima kasih sudah mampir dan mencoba alat analisis sederhana ini.</p>
+              <p>
+                Sebelum Anda melangkah lebih jauh, saya ingin menyampaikan <strong>permohonan maaf yang sebesar-besarnya</strong> apabila Anda menemukan adanya keterlambatan data, <em>loading</em> yang terkadang lama, atau selisih harga
+                yang tidak 100% presisi dengan market real-time.
+              </p>
+              <p>
+                Anda mungkin juga menyadari bahwa <strong>pilihan aset (koin) yang tersedia masih terbatas</strong>. Hal ini dikarenakan saya memprioritaskan stabilitas sistem pada koin-koin Top Tier terlebih dahulu, mengingat adanya
+                batasan akses data pada API publik yang saya gunakan.
+              </p>
+              <p>
+                Saat ini sistem ini memang berjalan murni menggunakan sumber daya gratisan tanpa server premium. Namun, percayalah bahwa logika di balik setiap sinyal trading plan dibuat dengan penuh perhitungan untuk membantu analisa Anda.
+              </p>
+              <p className="text-white pt-2 font-medium">Terima kasih telah memaklumi kekurangan ini. Dukungan dan kehadiran Anda di sini sudah menjadi motivasi terbesar bagi saya untuk terus berinovasi.</p>
             </div>
-            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex flex-col items-center justify-center gap-2 hover:bg-white/[0.08] transition-all group cursor-default">
-              <Database size={18} className="text-gray-500 group-hover:text-fuchsia-400 transition-colors" />
-              <span className="text-[9px] font-bold uppercase text-gray-500 group-hover:text-gray-300">Data Flow</span>
+
+            {/* Tombol Donasi */}
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 pt-6 border-t border-white/5 border-dashed">
+              <p className="text-[10px] text-gray-500 uppercase tracking-widest text-center mb-1">Bantu tambah server & unlock lebih banyak koin?</p>
+              <a
+                href="https://trakteer.id/username-anda" // GANTI LINK INI
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-3 bg-violet-600 hover:bg-violet-500 text-white px-8 py-3 rounded-xl font-bold transition-all transform hover:scale-[1.02] shadow-lg shadow-violet-900/20"
+              >
+                <Coffee size={18} className="group-hover:animate-bounce" />
+                <span>Traktir Kopi untuk Developer</span>
+              </a>
             </div>
           </div>
+          {/* ========================================================== */}
 
-          {/* Contact / Connect */}
+          {/* Contact Icons */}
           <div className="flex justify-center gap-8 border-t border-white/5 pt-8">
-            <a href="#" className="group flex flex-col items-center gap-1">
-              <div className="p-2 bg-white/5 rounded-full group-hover:bg-white/10 transition-colors text-gray-400 group-hover:text-white">
-                <Github size={18} />
-              </div>
+            <a href="#" className="text-gray-500 hover:text-white transition-colors hover:scale-110">
+              <Github size={18} />
             </a>
-            <a href="#" className="group flex flex-col items-center gap-1">
-              <div className="p-2 bg-white/5 rounded-full group-hover:bg-white/10 transition-colors text-gray-400 group-hover:text-white">
-                <Instagram size={18} />
-              </div>
+            <a href="#" className="text-gray-500 hover:text-white transition-colors hover:scale-110">
+              <Instagram size={18} />
             </a>
-            <a href="mailto:fidat@example.com" className="group flex flex-col items-center gap-1">
-              <div className="p-2 bg-white/5 rounded-full group-hover:bg-white/10 transition-colors text-gray-400 group-hover:text-white">
-                <Mail size={18} />
-              </div>
+            <a href="mailto:fidat@example.com" className="text-gray-500 hover:text-white transition-colors hover:scale-110">
+              <Mail size={18} />
             </a>
           </div>
 
-          <p className="text-center text-[9px] text-gray-700 mt-8 font-mono tracking-wider">SYSTEM VERSION 1.0.4 • ACCESS GRANTED</p>
+          <p className="text-center text-[9px] text-gray-700 mt-8 font-mono tracking-wider">BUILT WITH PASSION & NEURAL NETWORKS</p>
         </div>
       </div>
     </main>

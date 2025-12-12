@@ -10,6 +10,7 @@ import CryptoSelector from "./components/CryptoSelector";
 import MarketStats from "./components/MarketStats";
 import InteractiveBackground from "./components/InteractiveBackground";
 import Link from "next/link";
+import SystemManual from "./components/SystemManual";
 import { RefreshCw, TrendingUp, Activity, BarChart3, Zap, Clock, ArrowRight, Layers, AlertCircle, Info } from "lucide-react";
 
 export default function Home() {
@@ -282,6 +283,7 @@ export default function Home() {
           </Link>
         </div>
       </div>
+      <SystemManual />
     </main>
   );
 }

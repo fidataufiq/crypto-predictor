@@ -73,7 +73,7 @@ export default function Home() {
       <div className="z-10 w-full max-w-5xl space-y-4 flex flex-col items-center">
         {/* Header Title */}
         <div className="text-center space-y-1 w-full">
-          <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-purple-400 to-fuchsia-400 drop-shadow-lg">CRYPTO ORACLE</h1>
+          <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-purple-400 to-fuchsia-400 drop-shadow-lg">PRYDEXI</h1>
           <p className="text-gray-500 text-[10px] tracking-[0.2em] uppercase">AI-Driven Technical Analysis</p>
         </div>
 

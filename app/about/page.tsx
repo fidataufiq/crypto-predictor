@@ -87,9 +87,9 @@ export default function AboutPage() {
 
             {/* Tombol Donasi */}
             <div className="mt-8 flex flex-col items-center justify-center gap-3 pt-6 border-t border-white/5 border-dashed">
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest text-center mb-1">Bantu tambah server & unlock lebih banyak koin?</p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-widest text-center mb-1">Bantu tambah fitur & unlock lebih banyak koin?</p>
               <a
-                href="https://trakteer.id/username-anda" // GANTI LINK INI
+                href="https://trakteer.id/thekreator" // GANTI LINK INI
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-3 bg-violet-600 hover:bg-violet-500 text-white px-8 py-3 rounded-xl font-bold transition-all transform hover:scale-[1.02] shadow-lg shadow-violet-900/20"
@@ -109,7 +109,7 @@ export default function AboutPage() {
             <a href="#" className="text-gray-500 hover:text-white transition-colors hover:scale-110">
               <Instagram size={18} />
             </a>
-            <a href="mailto:fidat@example.com" className="text-gray-500 hover:text-white transition-colors hover:scale-110">
+            <a href="mailto:nextlapstudio@gmail.com" className="text-gray-500 hover:text-white transition-colors hover:scale-110">
               <Mail size={18} />
             </a>
           </div>

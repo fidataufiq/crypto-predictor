@@ -26,7 +26,7 @@ export default function CopyButton({ data }: { data: AnalysisData }) {
 💡 *Analisa AI:*
 "${data.reason}"
 
-_Dibuat oleh CryptoPredict App_
+_Dibuat oleh PRYDEXI_
     `.trim();
 
     try {

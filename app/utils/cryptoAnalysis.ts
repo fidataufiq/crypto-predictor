@@ -3,33 +3,96 @@
 import axios from "axios";
 import { RSI, SMA, MACD } from "technicalindicators";
 
+// Lokasi: app/utils/cryptoAnalysis.ts
+
+// ... imports tetap sama ...
+
 export const COINS = [
-  { id: "bitcoin", name: "Bitcoin", symbol: "BTC" },
-  { id: "ethereum", name: "Ethereum", symbol: "ETH" },
-  { id: "solana", name: "Solana", symbol: "SOL" },
-  { id: "dogecoin", name: "Dogecoin", symbol: "DOGE" },
-  { id: "ripple", name: "XRP", symbol: "XRP" },
-  { id: "binancecoin", name: "BNB", symbol: "BNB" },
-  { id: "cardano", name: "Cardano", symbol: "ADA" },
+  // --- MAJOR COINS ---
+  { id: "bitcoin", name: "Bitcoin", symbol: "BTC", image: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png" },
+  { id: "ethereum", name: "Ethereum", symbol: "ETH", image: "https://assets.coingecko.com/coins/images/279/large/ethereum.png" },
+  { id: "solana", name: "Solana", symbol: "SOL", image: "https://assets.coingecko.com/coins/images/4128/large/solana.png" },
+  { id: "binancecoin", name: "BNB", symbol: "BNB", image: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png" },
+
+  // --- REQUESTED NEW COINS (HOT 🔥) ---
+  {
+    id: "hyperliquid",
+    name: "Hyperliquid",
+    symbol: "HYPE",
+    image: "https://assets.coingecko.com/coins/images/35534/large/hyperliquid.png", // Pastikan ID ini valid di CG
+  },
+  {
+    id: "aster-2", // ID CoinGecko untuk Aster (Rebranding dari APX)
+    name: "Aster",
+    symbol: "ASTER",
+    image: "https://assets.coingecko.com/coins/images/12504/large/uniswap-uni.png", // Placeholder jika logo spesifik belum ke-load, atau gunakan logo APX
+  },
+  {
+    id: "astar", // Sering tertukar dengan Aster, jadi kita masukkan juga
+    name: "Astar",
+    symbol: "ASTR",
+    image: "https://assets.coingecko.com/coins/images/22617/large/astar.png",
+  },
+
+  // --- POPULAR ALTS ---
+  { id: "ripple", name: "XRP", symbol: "XRP", image: "https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png" },
+  { id: "cardano", name: "Cardano", symbol: "ADA", image: "https://assets.coingecko.com/coins/images/975/large/cardano.png" },
+  { id: "dogecoin", name: "Dogecoin", symbol: "DOGE", image: "https://assets.coingecko.com/coins/images/5/large/dogecoin.png" },
+  { id: "avalanche-2", name: "Avalanche", symbol: "AVAX", image: "https://assets.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png" },
+  { id: "polkadot", name: "Polkadot", symbol: "DOT", image: "https://assets.coingecko.com/coins/images/12171/large/polkadot.png" },
+  { id: "matic-network", name: "Polygon", symbol: "MATIC", image: "https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png" },
+  { id: "chainlink", name: "Chainlink", symbol: "LINK", image: "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png" },
+  { id: "shiba-inu", name: "Shiba Inu", symbol: "SHIB", image: "https://assets.coingecko.com/coins/images/11939/large/shiba.png" },
+  { id: "sui", name: "Sui", symbol: "SUI", image: "https://assets.coingecko.com/coins/images/26375/large/sui_asset.jpeg" },
+  { id: "render-token", name: "Render", symbol: "RNDR", image: "https://assets.coingecko.com/coins/images/11636/large/rndr.png" },
+  { id: "pepe", name: "Pepe", symbol: "PEPE", image: "https://assets.coingecko.com/coins/images/29850/large/pepe-token.jpeg" },
 ];
+
+// ... (Sisa kode getCryptoAnalysis biarkan tetap sama) ...
 
 // Type untuk Timeframe
 export type Timeframe = "SHORT" | "MEDIUM" | "LONG";
 
+// Lokasi: app/utils/cryptoAnalysis.ts (Partial Update fungsi saja)
+
+// ... import dan COINS array biarkan tetap sama ...
+
 export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "MEDIUM") {
   try {
-    // 1. Tentukan durasi hari berdasarkan Timeframe
-    let days = "30"; // Default Medium
+    let days = "30";
     if (timeframe === "SHORT") days = "2";
     if (timeframe === "LONG") days = "365";
 
-    // 2. Fetch Data
-    const response = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}/ohlc?vs_currency=usd&days=${days}`);
+    // REQUEST API
+    const url = `https://api.coingecko.com/api/v3/coins/${coinId}/ohlc?vs_currency=usd&days=${days}`;
+
+    // Tambahkan header opsional jika punya API Key, kalau free biarkan kosong
+    const response = await axios.get(url).catch((err) => {
+      // Tangani error spesifik
+      if (err.response && err.response.status === 429) {
+        throw new Error("RATE_LIMIT");
+      }
+      if (err.response && err.response.status === 404) {
+        throw new Error("NOT_FOUND");
+      }
+      throw err;
+    });
 
     const rawData = response.data;
-    // Validasi data cukup
+
+    // --- VALIDASI DATA ---
+    // SMA 50 butuh minimal 50 candle.
+    // Jika 'days=2' (SHORT), maks candle adalah 96 (48 jam x 2).
+    // Koin baru seringkali cuma punya < 50 candle di timeframe ini.
     if (!rawData || rawData.length < 52) {
-      console.warn("Data tidak cukup untuk analisis teknikal");
+      console.warn(`Data ${coinId} tidak cukup untuk analisis Short Term.`);
+
+      // --- FALLBACK MECHANISM ---
+      // Jika Short gagal (data dikit), kita paksa coba ambil Medium (30 hari)
+      if (timeframe === "SHORT") {
+        console.log("Mencoba mengambil data Medium sebagai fallback...");
+        return getCryptoAnalysis(coinId, "MEDIUM");
+      }
       return null;
     }
 
@@ -45,17 +108,13 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
       close: d[4],
     }));
 
-    // --- 3. Hitung Indikator ---
-
-    // RSI (14)
+    // --- Hitung Indikator ---
     const rsiValues = RSI.calculate({ values: closePrices, period: 14 });
     const currentRSI = rsiValues[rsiValues.length - 1];
 
-    // SMA (50)
     const smaValues = SMA.calculate({ values: closePrices, period: 50, SimpleMovingAverage: [] } as any);
     const currentSMA = smaValues[smaValues.length - 1];
 
-    // MACD (12, 26, 9)
     const macdInput = {
       values: closePrices,
       fastPeriod: 12,
@@ -67,18 +126,18 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
     const macdValues = MACD.calculate(macdInput);
     const currentMACD = macdValues[macdValues.length - 1];
 
-    // --- 4. Logika Sinyal ---
+    // --- Logika Sinyal ---
     let signal = "HOLD";
     let sentiment = "Neutral";
     let color = "text-gray-400";
     let borderColor = "border-gray-500";
 
     let bullishScore = 0;
-    if (currentRSI < 30) bullishScore++;
-    if (currentPrice > currentSMA) bullishScore++;
 
-    // --- PERBAIKAN DI SINI ---
-    // Kita pastikan MACD dan signal TIDAK undefined sebelum membandingkan
+    // Safety check kalau indikator belum ke-load (misal koin baru listing)
+    if (currentRSI && currentRSI < 30) bullishScore++;
+    if (currentSMA && currentPrice > currentSMA) bullishScore++;
+
     if (currentMACD && currentMACD.MACD !== undefined && currentMACD.signal !== undefined && currentMACD.MACD > currentMACD.signal) {
       bullishScore++;
     }
@@ -105,15 +164,10 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
       borderColor = "border-gray-500";
     }
 
-    // --- 5. Siapkan Skor Sentiment (0 - 1) ---
-    // RSI biasanya 0-100. Kita bagi 100 jadi 0-1 untuk Gauge.
-    // Contoh: RSI 30 jadi 0.3 (Fear), RSI 70 jadi 0.7 (Greed).
-    let sentimentScore = currentRSI / 100;
-
-    // Safety check biar gak error kalau NaN
+    // Sentiment Score untuk Gauge
+    let sentimentScore = currentRSI ? currentRSI / 100 : 0.5;
     if (isNaN(sentimentScore)) sentimentScore = 0.5;
 
-    // --- 5. Waktu Update ---
     const now = new Date();
     const timeString = now.toLocaleTimeString("id-ID", {
       hour: "2-digit",
@@ -139,10 +193,17 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
       color,
       borderColor,
       lastUpdated: timeString,
-      sentimentScore: sentimentScore, // <--- DATA BARU UNTUK GAUGE
+      sentimentScore,
     };
-  } catch (error) {
-    console.error("Error fetching data:", error);
+  } catch (error: any) {
+    // Log error di console biar tau kenapa
+    if (error.message === "RATE_LIMIT") {
+      console.error("⛔ API RATE LIMIT: Tunggu sebentar sebelum klik lagi.");
+    } else if (error.message === "NOT_FOUND") {
+      console.error("⛔ DATA TIDAK DITEMUKAN: Koin ini mungkin belum punya data OHLC di CG.");
+    } else {
+      console.error("Error fetching data:", error);
+    }
     return null;
   }
 }

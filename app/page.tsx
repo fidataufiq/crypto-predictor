@@ -7,6 +7,10 @@ import AcademyTooltip from "./components/AcademyTooltip";
 import CryptoChart from "./components/CryptoChart";
 import SentimentGauge from "./components/SentimentGauge";
 import CryptoSelector from "./components/CryptoSelector";
+import MarketStats from "./components/MarketStats";
+
+import { Info } from "lucide-react";
+import Link from "next/link";
 import { RefreshCw, TrendingUp, Activity, BarChart3, Zap, Clock, ArrowRight, Layers, AlertCircle } from "lucide-react";
 
 export default function Home() {
@@ -72,15 +76,21 @@ export default function Home() {
       <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] bg-fuchsia-900/15 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Container Utama */}
-      <div className="z-10 w-full max-w-5xl space-y-6">
+      <div className="z-10 w-full max-w-5xl space-y-4 flex flex-col items-center">
         {/* Header Title */}
-        <div className="text-center space-y-1">
+        <div className="text-center space-y-1 w-full">
           <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-purple-400 to-fuchsia-400">CRYPTO ORACLE</h1>
           <p className="text-gray-500 text-[10px] tracking-[0.2em] uppercase">AI-Driven Technical Analysis</p>
         </div>
 
+        {/* --- 1. PASANG MARKET STATS DI SINI --- */}
+        {/* Ini posisinya tepat di bawah Judul dan di atas Kartu Utama */}
+        <div className="w-full">
+          <MarketStats />
+        </div>
+
         {/* --- MAIN GLASS CARD --- */}
-        <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl relative ring-1 ring-white/5 min-h-[800px] transition-all duration-500">
+        <div className="w-full bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl relative ring-1 ring-white/5 min-h-[800px] transition-all duration-500">
           {/* Loading States */}
           {isInitialLoad && <LoadingOverlay />}
           {isRefetching && <LoadingOverlay />}
@@ -283,7 +293,14 @@ export default function Home() {
             )}
           </div>
         </div>
-        <p className="text-center text-[10px] text-gray-600 font-mono">Data provided by CoinGecko Public API</p>
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <p className="text-center text-[10px] text-gray-600 font-mono">Data provided by CoinGecko Public API</p>
+
+          <Link href="/about" className="group flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-all active:scale-95">
+            <Info size={12} className="text-violet-400 group-hover:text-white transition-colors" />
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest group-hover:text-white transition-colors">About The Architect</span>
+          </Link>
+        </div>
       </div>
     </main>
   );

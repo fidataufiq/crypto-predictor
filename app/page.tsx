@@ -8,38 +8,33 @@ import CryptoChart from "./components/CryptoChart";
 import SentimentGauge from "./components/SentimentGauge";
 import CryptoSelector from "./components/CryptoSelector";
 import MarketStats from "./components/MarketStats";
-
-import { Info } from "lucide-react";
+import InteractiveBackground from "./components/InteractiveBackground";
 import Link from "next/link";
-import { RefreshCw, TrendingUp, Activity, BarChart3, Zap, Clock, ArrowRight, Layers, AlertCircle } from "lucide-react";
+import { RefreshCw, TrendingUp, Activity, BarChart3, Zap, Clock, ArrowRight, Layers, AlertCircle, Info } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
   const [selectedCoin, setSelectedCoin] = useState(COINS[0].id);
   const [timeframe, setTimeframe] = useState<Timeframe>("MEDIUM");
-
-  // Data State
   const [data, setData] = useState<any>(null);
 
-  // Loading States
+  // State untuk Loading & Refetching
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isRefetching, setIsRefetching] = useState(false);
 
+  // === STATE BARU UNTUK DETEKSI MOUSE ===
+  const [isCardHovered, setIsCardHovered] = useState(false);
+
   const fetchData = async () => {
-    // Set loading state yang sesuai
     if (!data) setIsInitialLoad(true);
     else setIsRefetching(true);
 
     try {
-      const [result] = await Promise.all([
-        getCryptoAnalysis(selectedCoin, timeframe),
-        new Promise((resolve) => setTimeout(resolve, 600)), // UX Delay
-      ]);
+      const [result] = await Promise.all([getCryptoAnalysis(selectedCoin, timeframe), new Promise((resolve) => setTimeout(resolve, 600))]);
 
       if (result) {
         setData(result);
       } else {
-        // FIX: Reset data jika API gagal/kosong agar harga lama tidak muncul
         setData(null);
       }
     } catch (error) {
@@ -56,7 +51,6 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCoin, timeframe]);
 
-  // Komponen Loading Overlay
   const LoadingOverlay = () => (
     <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#050505]/60 backdrop-blur-md rounded-3xl transition-all duration-500">
       <div className="relative">
@@ -71,45 +65,42 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#050505] text-white flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden font-sans">
-      {/* Background Ambience */}
-      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-violet-900/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] bg-fuchsia-900/15 rounded-full blur-[100px] pointer-events-none" />
+      {/* === BACKGROUND MENERIMA SINYAL DARI KARTU === */}
+      {/* Jika isCardHovered = true, background akan mematikan lampunya */}
+      <InteractiveBackground isHovering={isCardHovered} />
 
-      {/* Container Utama */}
       <div className="z-10 w-full max-w-5xl space-y-4 flex flex-col items-center">
         {/* Header Title */}
         <div className="text-center space-y-1 w-full">
-          <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-purple-400 to-fuchsia-400">CRYPTO ORACLE</h1>
+          <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-purple-400 to-fuchsia-400 drop-shadow-lg">CRYPTO ORACLE</h1>
           <p className="text-gray-500 text-[10px] tracking-[0.2em] uppercase">AI-Driven Technical Analysis</p>
         </div>
 
-        {/* --- 1. PASANG MARKET STATS DI SINI --- */}
-        {/* Ini posisinya tepat di bawah Judul dan di atas Kartu Utama */}
         <div className="w-full">
           <MarketStats />
         </div>
 
         {/* --- MAIN GLASS CARD --- */}
-        <div className="w-full bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl relative ring-1 ring-white/5 min-h-[800px] transition-all duration-500">
-          {/* Loading States */}
+        {/* Tambahkan Event Handler di sini untuk mendeteksi mouse */}
+        <div
+          className="w-full bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl relative ring-1 ring-white/5 min-h-[800px] transition-all duration-500"
+          onMouseEnter={() => setIsCardHovered(true)} // Mouse Masuk -> Lampu Mati
+          onMouseLeave={() => setIsCardHovered(false)} // Mouse Keluar -> Lampu Nyala
+        >
           {isInitialLoad && <LoadingOverlay />}
           {isRefetching && <LoadingOverlay />}
 
-          {/* Content Wrapper */}
           <div className={`transition-opacity duration-500 ${isInitialLoad ? "opacity-0" : "opacity-100"}`}>
-            {/* --- TOP SECTION --- */}
             <div className="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4 border-b border-white/5 pb-6">
-              {/* Asset Selector */}
               <div className="w-full sm:w-1/3">
                 <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Asset Pair</label>
                 <CryptoSelector coins={COINS} selectedId={selectedCoin} onSelect={setSelectedCoin} />
               </div>
 
-              {/* Price Display */}
               {data ? (
                 <div className="text-left sm:text-right mt-2 sm:mt-0">
                   <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Current Price</p>
-                  <p className="text-3xl font-mono font-medium text-white tracking-tight">${data.price.toLocaleString()}</p>
+                  <p className="text-3xl font-mono font-medium text-white tracking-tight drop-shadow-md">${data.price.toLocaleString()}</p>
                   <div className="flex items-center sm:justify-end gap-2 mt-2">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -122,7 +113,6 @@ export default function Home() {
                   </div>
                 </div>
               ) : (
-                // Placeholder saat data kosong/error agar layout tidak geser
                 <div className="text-left sm:text-right mt-2 sm:mt-0 opacity-50">
                   <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Current Price</p>
                   <p className="text-3xl font-mono font-medium text-gray-500 tracking-tight">---</p>
@@ -130,12 +120,9 @@ export default function Home() {
               )}
             </div>
 
-            {/* --- MAIN CONTENT GRID --- */}
             {data ? (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* KUBU A (KIRI) */}
                 <div className="lg:col-span-2 space-y-4">
-                  {/* Timeframe */}
                   <div className="flex items-center justify-between bg-black/20 p-1.5 rounded-xl border border-white/5">
                     <div className="flex items-center gap-2 pl-2">
                       <Layers size={14} className="text-gray-500" />
@@ -156,20 +143,18 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Chart */}
-                  <div className="w-full h-[300px] bg-black/20 rounded-xl border border-white/5 overflow-hidden relative">
+                  <div className="w-full h-[300px] bg-black/20 rounded-xl border border-white/5 overflow-hidden relative shadow-inner">
                     <div className="absolute top-2 left-3 z-10">
                       <span className="text-[10px] text-gray-500 bg-black/50 px-2 py-1 rounded backdrop-blur-sm border border-white/5">Mode: {timeframe === "SHORT" ? "Intraday" : timeframe === "MEDIUM" ? "Swing" : "Long Term"}</span>
                     </div>
-                    <div className="h-full w-full">
+                    <div className="h-full w-full opacity-90 hover:opacity-100 transition-opacity">
                       <CryptoChart data={data.chartData} />
                     </div>
                   </div>
 
-                  {/* Signal */}
-                  <div className="flex items-center justify-between p-5 bg-gradient-to-r from-white/5 to-transparent rounded-xl border border-white/5">
+                  <div className="flex items-center justify-between p-5 bg-gradient-to-r from-white/5 to-transparent rounded-xl border border-white/5 hover:bg-white/[0.07] transition-colors cursor-default group">
                     <div>
-                      <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">AI Recommendation</p>
+                      <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold group-hover:text-violet-300 transition-colors">AI Recommendation</p>
                       <h2 className={`text-3xl font-black tracking-wider ${data.color} drop-shadow-lg mt-1`}>{data.signal}</h2>
                     </div>
                     <div className="text-right">
@@ -179,10 +164,8 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* KUBU B (KANAN) */}
                 <div className="lg:col-span-1 grid grid-cols-2 gap-3 content-start">
-                  {/* Gauge */}
-                  <div className="col-span-2 p-4 rounded-xl bg-white/[0.03] border border-white/5 flex flex-col items-center justify-between min-h-[190px]">
+                  <div className="col-span-2 p-4 rounded-xl bg-white/[0.03] border border-white/5 flex flex-col items-center justify-between min-h-[190px] hover:border-violet-500/20 transition-colors">
                     <div className="flex items-center gap-2 w-full justify-center pt-1">
                       <Zap size={14} className="text-violet-400" />
                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Market Psychology</span>
@@ -197,8 +180,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* RSI */}
-                  <div className="col-span-1 p-3 rounded-xl bg-white/[0.03] border border-white/5 relative">
+                  <div className="col-span-1 p-3 rounded-xl bg-white/[0.03] border border-white/5 relative hover:bg-white/[0.05] transition-colors">
                     <div className="flex items-center gap-1 mb-1 text-gray-400">
                       <Activity size={12} />
                       <span className="text-[10px] font-bold uppercase">RSI</span>
@@ -208,8 +190,7 @@ export default function Home() {
                     <p className="text-[9px] text-gray-600">Relative Strength</p>
                   </div>
 
-                  {/* MACD */}
-                  <div className="col-span-1 p-3 rounded-xl bg-white/[0.03] border border-white/5 relative">
+                  <div className="col-span-1 p-3 rounded-xl bg-white/[0.03] border border-white/5 relative hover:bg-white/[0.05] transition-colors">
                     <div className="flex items-center gap-1 mb-1 text-gray-400">
                       <BarChart3 size={12} />
                       <span className="text-[10px] font-bold uppercase">MACD</span>
@@ -225,8 +206,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* SMA */}
-                  <div className="col-span-2 p-3 rounded-xl bg-white/[0.03] border border-white/5 relative">
+                  <div className="col-span-2 p-3 rounded-xl bg-white/[0.03] border border-white/5 relative hover:bg-white/[0.05] transition-colors">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-1 text-gray-400">
                         <TrendingUp size={12} />
@@ -241,7 +221,6 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* ACTION BUTTONS */}
                 <div className="col-span-1 lg:col-span-3 pt-2">
                   <button
                     onClick={() => {
@@ -271,7 +250,6 @@ export default function Home() {
                 </div>
               </div>
             ) : (
-              // State Gagal / Data Kosong (Ditampilkan jika Loading selesai tapi Data NULL)
               !isInitialLoad &&
               !isRefetching && (
                 <div className="flex flex-col items-center justify-center h-[500px] text-center space-y-4 border border-red-500/10 bg-red-500/5 rounded-2xl">
@@ -293,6 +271,8 @@ export default function Home() {
             )}
           </div>
         </div>
+
+        {/* Footer Credits & About Link */}
         <div className="mt-8 flex flex-col items-center gap-3">
           <p className="text-center text-[10px] text-gray-600 font-mono">Data provided by CoinGecko Public API</p>
 

@@ -11,6 +11,7 @@
   "dependencies": {
     "axios": "^1.13.2",
     "clsx": "^2.1.1",
+    "framer-motion": "^12.23.26",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.4",
     "lightweight-charts": "^4.1.1",

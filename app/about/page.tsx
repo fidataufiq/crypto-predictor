@@ -1,10 +1,27 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Github, Instagram, Mail, Terminal, Code2, Cpu, Database, Bot, Coffee, Heart, AlertCircle } from "lucide-react";
+import { ArrowLeft, Github, Instagram, Mail, Terminal, Database, Bot, Coffee, AlertCircle, History, X, GitCommit, ChevronRight } from "lucide-react";
+
+// Pastikan file ini sudah Anda buat di folder src/data/changelogs.js
+import { changelogData } from "../data/changelogs";
 
 export default function AboutPage() {
   const router = useRouter();
+  const [isLogOpen, setIsLogOpen] = useState(false);
+
+  // Helper warna badge
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case "Major":
+        return "bg-violet-500/20 text-violet-300 border-violet-500/30";
+      case "Improvement":
+        return "bg-blue-500/20 text-blue-300 border-blue-500/30";
+      default:
+        return "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
+    }
+  };
 
   return (
     <main className="min-h-screen bg-black text-white flex items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-violet-500/30">
@@ -53,14 +70,27 @@ export default function AboutPage() {
               <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-2 flex items-center justify-center gap-2">
                 <Bot size={12} className="text-fuchsia-400" /> The Symbiosis
               </h3>
-              <p className="text-gray-400 leading-relaxed font-light text-sm italic">
+              <p className="text-gray-400 leading-relaxed font-light text-sm italic mb-4">
                 "Karya ini adalah kolaborasi antara Logika Manusia dan Kecerdasan Buatan. Tanpa AI, visi arsitektural ini mungkin tak akan mencapai tingkat presisi dan estetika yang Anda lihat sekarang.
                 <span className="text-violet-300 not-italic"> I code the logic, AI polishes the soul.</span>"
               </p>
             </div>
+
+            {/* === BUTTON SYSTEM LOG === */}
+            <div className="flex justify-center">
+              <button
+                onClick={() => setIsLogOpen(true)}
+                className="group relative flex items-center gap-3 px-5 py-2.5 bg-black hover:bg-zinc-900 border border-violet-500/30 hover:border-violet-400 rounded-lg transition-all duration-300 overflow-hidden shadow-[0_0_15px_-5px_rgba(139,92,246,0.3)]"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-violet-500/10 to-transparent -translate-x-full group-hover:translate-x-full duration-1000 transition-transform" />
+                <History size={14} className="text-violet-400 group-hover:text-white transition-colors" />
+                <span className="text-xs font-bold text-gray-300 group-hover:text-white tracking-widest uppercase">Access System Log</span>
+                <ChevronRight size={14} className="text-zinc-600 group-hover:text-violet-300 ml-1 transition-transform group-hover:translate-x-1" />
+              </button>
+            </div>
           </div>
 
-          {/* === SECTION BARU: PESAN DARI DEVELOPER (Updated: Limitasi Koin) === */}
+          {/* === DEVELOPER'S NOTE === */}
           <div className="mb-10 p-6 md:p-8 rounded-2xl bg-gradient-to-b from-white/[0.02] to-transparent border border-white/10 text-left relative overflow-hidden">
             {/* Header Section */}
             <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/5">
@@ -68,7 +98,7 @@ export default function AboutPage() {
               <span className="text-xs font-bold text-gray-300 uppercase tracking-widest">Developer's Note</span>
             </div>
 
-            {/* Isi Surat - Mengalir dan Jujur */}
+            {/* Isi Surat */}
             <div className="space-y-4 text-sm text-gray-400 leading-relaxed font-light">
               <p>Halo, Sahabat Trader. Terima kasih sudah mampir dan mencoba alat analisis sederhana ini.</p>
               <p>
@@ -89,7 +119,7 @@ export default function AboutPage() {
             <div className="mt-8 flex flex-col items-center justify-center gap-3 pt-6 border-t border-white/5 border-dashed">
               <p className="text-[10px] text-gray-500 uppercase tracking-widest text-center mb-1">Bantu tambah fitur & unlock lebih banyak koin?</p>
               <a
-                href="https://trakteer.id/thekreator" // GANTI LINK INI
+                href="https://trakteer.id/thekreator"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-3 bg-violet-600 hover:bg-violet-500 text-white px-8 py-3 rounded-xl font-bold transition-all transform hover:scale-[1.02] shadow-lg shadow-violet-900/20"
@@ -99,14 +129,13 @@ export default function AboutPage() {
               </a>
             </div>
           </div>
-          {/* ========================================================== */}
 
           {/* Contact Icons */}
           <div className="flex justify-center gap-8 border-t border-white/5 pt-8">
-            <a href="#" className="text-gray-500 hover:text-white transition-colors hover:scale-110">
+            <a href="#" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white transition-colors hover:scale-110">
               <Github size={18} />
             </a>
-            <a href="#" className="text-gray-500 hover:text-white transition-colors hover:scale-110">
+            <a href="#" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white transition-colors hover:scale-110">
               <Instagram size={18} />
             </a>
             <a href="mailto:nextlapstudio@gmail.com" className="text-gray-500 hover:text-white transition-colors hover:scale-110">
@@ -117,6 +146,67 @@ export default function AboutPage() {
           <p className="text-center text-[9px] text-gray-700 mt-8 font-mono tracking-wider">BUILT WITH PASSION & NEURAL NETWORKS</p>
         </div>
       </div>
+
+      {/* === MODAL / POPUP CHANGELOG === */}
+      {isLogOpen && (
+        <div className="fixed inset-0 z-[999] flex justify-center items-center px-4">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/90 backdrop-blur-sm transition-opacity" onClick={() => setIsLogOpen(false)} />
+
+          {/* Modal Content */}
+          <div className="relative w-full max-w-2xl bg-[#050505] border border-violet-500/20 rounded-2xl shadow-2xl shadow-violet-900/20 overflow-hidden flex flex-col max-h-[80vh] animate-in fade-in zoom-in duration-300">
+            {/* Header Modal */}
+            <div className="flex justify-between items-center p-6 border-b border-white/5 bg-white/[0.02]">
+              <div>
+                <h2 className="text-xl font-bold text-white flex items-center gap-2 font-mono">
+                  <GitCommit className="text-violet-500" />
+                  SYSTEM_LOG
+                </h2>
+                <p className="text-zinc-500 text-xs mt-1 tracking-wider uppercase">Architecture Revision History</p>
+              </div>
+              {/* === PERBAIKAN DISINI: Menambahkan aria-label === */}
+              <button onClick={() => setIsLogOpen(false)} className="p-2 hover:bg-white/10 rounded-full text-zinc-500 hover:text-white transition" aria-label="Close System Log">
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Scrollable List */}
+            <div className="overflow-y-auto p-6 space-y-8 custom-scrollbar">
+              {changelogData.map((item, index) => (
+                <div key={index} className="relative pl-8 border-l border-white/10 last:border-0">
+                  {/* Timeline Dot */}
+                  <div className="absolute -left-[5px] top-0 w-[9px] h-[9px] rounded-full bg-violet-600 ring-4 ring-[#050505]" />
+
+                  {/* Header Item */}
+                  <div className="flex flex-wrap items-center gap-3 mb-2">
+                    <span className="font-mono text-violet-400 font-bold text-sm">{item.version}</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full border ${getTypeColor(item.type)} uppercase tracking-wide font-medium`}>{item.type}</span>
+                    <span className="text-zinc-600 text-xs ml-auto font-mono">{item.date}</span>
+                  </div>
+
+                  {/* Title & Description */}
+                  <h3 className="text-lg font-semibold text-gray-200 mb-1">{item.title}</h3>
+                  <p className="text-gray-400 text-sm mb-3 leading-relaxed font-light">{item.description}</p>
+
+                  {/* Details */}
+                  <ul className="space-y-1">
+                    {item.details.map((detail, idx) => (
+                      <li key={idx} className="text-zinc-500 text-sm flex items-start gap-2">
+                        <span className="text-violet-500/50 mt-1.5">•</span>
+                        {detail}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+
+              <div className="pt-4 text-center">
+                <p className="text-zinc-800 text-[10px] font-mono uppercase tracking-widest">End of Record</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

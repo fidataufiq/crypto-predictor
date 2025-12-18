@@ -1,5 +1,29 @@
 export const changelogData = [
   {
+    version: "v1.3.0",
+    date: "21 Dec 2025",
+    title: "The Bento Grid & Narrative Intelligence",
+    type: "Major",
+    description: "Perombakan total tata letak halaman strategi dan peningkatan kemampuan bahasa AI.",
+    details: [
+      "UI Overhaul (Command Center): Mengubah layout vertikal menjadi 'Bento Grid' (Side-by-Side). Tampilan Desktop kini terbagi dua kolom (Strategy vs Intel) yang lebih profesional dan padat.",
+      "Narrative AI Engine: Meng-upgrade penjelasan logika AI dari sekadar status kaku ('RSI Oversold') menjadi narasi analisis kausalitas yang menjelaskan alasan di balik sinyal ('...harga terlalu murah secara statistik, potensi pantulan tinggi').",
+      "Visual Polish: Menghilangkan ruang kosong (whitespace) yang tidak perlu, menyeragamkan efek hover pada kartu Target Profit, dan meningkatkan kontras/ketajaman teks Disclaimer.",
+    ],
+  },
+  {
+    version: "v1.2.2",
+    date: "20 Dec 2025",
+    title: "Execution Hub Integration",
+    type: "Feature",
+    description: "Integrasi jembatan eksekusi pasar untuk menghubungkan analisis dengan aksi nyata.",
+    details: [
+      "Implementasi 'Trade Now' Module: Menambahkan panel tombol eksekusi langsung ke bursa tier-1 (OKX, Bybit, Triv) tepat di bawah sinyal.",
+      "Affiliate Infrastructure: Penyesuaian struktur kode untuk mendukung tautan referral dinamis.",
+      "Layout Optimization: Penataan ulang footer halaman rekomendasi agar tombol 'Copy Signal' dan 'Execute' tertata rapi.",
+    ],
+  },
+  {
     version: "v1.2.1",
     date: "19 Dec 2025",
     title: "UX Refinement & Visual Fixes",

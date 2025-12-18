@@ -1,13 +1,21 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { ArrowLeft, Target, ShieldAlert, Crosshair, AlertTriangle, Clock, Zap, BarChart2 } from "lucide-react";
+import { ArrowLeft, Target, ShieldAlert, Crosshair, AlertTriangle, Clock, Zap, BarChart2, ExternalLink, Coins, CheckCircle2, Info } from "lucide-react";
 import { useEffect, useState, Suspense } from "react";
 import CopyButton from "../components/CopyButton";
 
+// --- KONFIGURASI LINK AFFILIATE ---
+const EXCHANGES = [
+  { name: "OKX", url: "https://www.okx.com/", color: "hover:border-white/40 hover:bg-white/5", label: "Global Pro" },
+  { name: "BYBIT", url: "https://www.bybit.com/", color: "hover:border-yellow-500/40 hover:bg-yellow-500/5", label: "Futures King" },
+  { name: "TRIV", url: "https://triv.co.id/", color: "hover:border-blue-500/40 hover:bg-blue-500/5", label: "Indonesian Reg" },
+  { name: "FLOX", url: "#", color: "hover:border-violet-500/40 hover:bg-violet-500/5", label: "New Gem" },
+];
+
 export default function RecommendationPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#050505] flex items-center justify-center text-gray-500">Loading Strategy...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#050505] flex items-center justify-center text-gray-500 font-mono animate-pulse">Initializing Strategy Module...</div>}>
       <TradingPlanContent />
     </Suspense>
   );
@@ -17,25 +25,21 @@ function TradingPlanContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // 1. AMBIL DATA NYATA DARI URL
+  // AMBIL DATA
   const coin = searchParams.get("coin") || "Unknown";
   const price = parseFloat(searchParams.get("price") || "0");
   const signal = searchParams.get("signal") || "HOLD";
   const time = searchParams.get("time") || "-";
   const timeframe = searchParams.get("tf") || "MEDIUM";
 
-  // Data Teknikal Tambahan (Yang baru kita tambahkan di tombol)
   const rsi = parseFloat(searchParams.get("rsi") || "50");
   const sma = parseFloat(searchParams.get("sma") || "0");
   const macdVal = parseFloat(searchParams.get("macd") || "0");
-  const score = parseFloat(searchParams.get("score") || "50"); // Ini Score RSI/Sentiment (0-100)
 
   const [levels, setLevels] = useState<any>(null);
 
   useEffect(() => {
-    if (price > 0) {
-      calculateLevels();
-    }
+    if (price > 0) calculateLevels();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [price, signal, timeframe]);
 
@@ -45,7 +49,7 @@ function TradingPlanContent() {
     const isBuy = signalUpper.includes("BUY");
     const isNeutral = !isSell && !isBuy;
 
-    // --- LOGIKA LEVEL HARGA (Risk & Reward) ---
+    // --- LOGIKA LEVEL HARGA ---
     let riskPercent = timeframe === "SHORT" ? 0.005 : timeframe === "LONG" ? 0.05 : 0.02;
     let reward1 = timeframe === "SHORT" ? 0.01 : timeframe === "LONG" ? 0.1 : 0.03;
     let reward2 = timeframe === "SHORT" ? 0.02 : timeframe === "LONG" ? 0.2 : 0.06;
@@ -64,47 +68,47 @@ function TradingPlanContent() {
       tp3 = price * (1 + reward3);
     }
 
-    // --- LOGIKA ALASAN DINAMIS (REAL DATA) ---
-    // Kita bangun kalimat berdasarkan data RSI & MACD yang sebenarnya
+    // ===============================================
+    // --- UPDATE: AI LOGIC NARRATIVE (LEBIH CERDAS) ---
+    // ===============================================
     let reasonParts = [];
 
-    // 1. Analisa RSI
-    if (rsi < 30) reasonParts.push("RSI berada di zona Oversold (Murah), potensi pantulan tinggi.");
-    else if (rsi > 70) reasonParts.push("RSI menyentuh Overbought (Jenuh Beli), waspada koreksi.");
-    else if (rsi > 50 && isBuy) reasonParts.push("RSI di atas 50 mendukung momentum Bullish.");
-    else if (rsi < 50 && isSell) reasonParts.push("RSI di bawah 50 mengonfirmasi tekanan jual.");
-
-    // 2. Analisa MACD
-    if (macdVal > 0) reasonParts.push("MACD Histogram positif menandakan tren naik.");
-    else reasonParts.push("MACD Histogram negatif menandakan tren turun.");
-
-    // 3. Analisa SMA
-    if (price > sma) reasonParts.push("Harga bergerak di atas rata-rata (Uptrend).");
-    else reasonParts.push("Harga berada di bawah rata-rata (Downtrend).");
-
-    // Gabungkan kalimat
-    let finalReason = reasonParts.join(" ");
-
-    // Fallback jika netral
-    if (isNeutral) finalReason = "Indikator teknikal menunjukkan sinyal campuran (Mixed Signal). Pasar sedang konsolidasi, disarankan Wait & See.";
-
-    // --- LOGIKA CONFIDENCE BERDASARKAN SKOR ---
-    // Skor sentimen 0-100.
-    // Buy Confidence = (100 - Score) jika rendah makin bagus
-    // Sell Confidence = Score jika tinggi makin bagus
-
-    let confidenceVal = 0;
-    if (isBuy) {
-      // Kalau Buy, RSI rendah (misal 30) itu bagus. Jadi confidence = 100 - 30 = 70 + boost
-      confidenceVal = 100 - rsi + 10;
-    } else if (isSell) {
-      // Kalau Sell, RSI tinggi (misal 70) itu bagus.
-      confidenceVal = rsi + 10;
-    } else {
-      confidenceVal = 50;
+    // 1. ANALISIS RSI (Psychology)
+    if (rsi < 30) {
+      reasonParts.push("Indikator RSI mendeteksi kondisi Jenuh Jual (Oversold) ekstrem. Secara historis, harga aset sudah dinilai terlalu murah (Undervalued) dan pasar cenderung melakukan akumulasi ulang, memicu potensi pantulan harga.");
+    } else if (rsi > 70) {
+      reasonParts.push("Terjadi euforia pembelian berlebih (Overbought). RSI di atas 70 mengindikasikan harga naik terlalu cepat dan rentan terhadap aksi ambil untung (Profit Taking) massal yang menyebabkan koreksi.");
+    } else if (rsi > 50 && isBuy) {
+      reasonParts.push("RSI bergerak stabil di zona positif (>50). Ini menunjukkan minat beli (Buying Pressure) masih mendominasi pasar, menjaga momentum kenaikan tetap terjaga.");
+    } else if (rsi < 50 && isSell) {
+      reasonParts.push("RSI tertahan di zona negatif (<50). Hal ini mengonfirmasi bahwa para penjual (Sellers) masih memegang kendali penuh atas tren harga saat ini.");
     }
 
-    // Clamp 0-99
+    // 2. ANALISIS MACD (Momentum)
+    if (macdVal > 0) {
+      reasonParts.push("Didukung oleh MACD Histogram positif, yang menandakan tren naik memiliki volume dan tenaga (Momentum) yang kuat, bukan sekadar kenaikan semu.");
+    } else {
+      reasonParts.push("MACD Histogram menunjukkan divergensi negatif, mengonfirmasi bahwa momentum penurunan masih sangat kuat dan belum ada tanda-tanda pelemahan tren jual.");
+    }
+
+    // 3. ANALISIS SMA (Trend Structure)
+    if (price > sma) {
+      reasonParts.push("Secara struktur, harga bertahan di atas garis rata-rata (SMA). Ini menjaga validitas fase Uptrend jangka menengah.");
+    } else {
+      reasonParts.push("Harga tertekan di bawah garis rata-rata (SMA), yang berfungsi sebagai resistensi dinamis dan mengonfirmasi fase Downtrend.");
+    }
+
+    let finalReason = reasonParts.join(" ");
+
+    // Fallback jika Netral
+    if (isNeutral) {
+      finalReason = "Algoritma mendeteksi sinyal yang bertentangan (Mixed Signals). Volatilitas pasar menurun dan arah tren belum terbentuk jelas. Disarankan untuk 'Wait & See' hingga terjadi breakout valid.";
+    }
+
+    // --- LOGIKA CONFIDENCE ---
+    let confidenceVal = 50;
+    if (isBuy) confidenceVal = 100 - rsi + 10;
+    else if (isSell) confidenceVal = rsi + 10;
     confidenceVal = Math.min(99, Math.max(40, confidenceVal));
 
     setLevels({
@@ -117,8 +121,8 @@ function TradingPlanContent() {
       riskPercent,
       reward1,
       timeframeName: timeframe,
-      confidence: Math.round(confidenceVal), // Confidence asli hitungan
-      reason: finalReason, // Alasan asli dari data
+      confidence: Math.round(confidenceVal),
+      reason: finalReason,
     });
   };
 
@@ -133,7 +137,7 @@ function TradingPlanContent() {
     return "SWING";
   };
 
-  if (!levels) return <div className="text-white text-center p-10">Processing Data...</div>;
+  if (!levels) return <div className="min-h-screen bg-[#050505] flex items-center justify-center text-gray-500">Processing Data...</div>;
 
   const analysisData = {
     coinName: coin,
@@ -145,146 +149,209 @@ function TradingPlanContent() {
   };
 
   return (
-    <main className="min-h-screen bg-[#050505] text-white p-4 sm:p-6 font-sans flex items-center justify-center relative overflow-hidden">
+    <main className="min-h-screen bg-[#050505] text-white p-4 sm:p-8 font-sans flex flex-col items-center justify-center relative overflow-hidden">
       {/* Background Decor */}
-      <div className="absolute top-[-20%] right-[-20%] w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] left-[-20%] w-[500px] h-[500px] bg-violet-900/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-violet-900/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[150px] pointer-events-none" />
 
-      <div className="w-full max-w-md z-10 space-y-6">
-        <button onClick={() => router.back()} className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors text-xs uppercase tracking-widest font-bold mb-2 group">
+      {/* --- BACK BUTTON --- */}
+      <div className="w-full max-w-5xl mb-6 z-10">
+        <button onClick={() => router.back()} className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors text-xs uppercase tracking-widest font-bold group w-fit">
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to Dashboard
         </button>
+      </div>
 
-        {/* --- TICKET CARD --- */}
-        <div className="bg-[#0a0a0a] rounded-3xl overflow-hidden p-1">
-          <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative ring-1 ring-white/5">
-            {/* Header Ticket */}
-            <div className={`p-6 border-b border-white/5 relative overflow-hidden ${levels.isSell ? "bg-red-500/5" : "bg-green-500/5"}`}>
-              <div className={`absolute top-0 left-0 w-1 h-full ${levels.isSell ? "bg-red-500" : "bg-green-500"}`} />
+      {/* === BENTO GRID LAYOUT === */}
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-6 z-10 items-stretch">
+        {/* --- LEFT COLUMN: STRATEGY (7/12) --- */}
+        <div className="lg:col-span-7 flex flex-col gap-6 h-full">
+          {/* 1. TICKET HEADER */}
+          <div className="bg-[#0a0a0a] rounded-3xl p-1 shadow-2xl shrink-0">
+            <div className={`bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 relative overflow-hidden`}>
+              <div className={`absolute top-0 left-0 w-1.5 h-full ${levels.isSell ? "bg-red-500" : "bg-green-500"}`} />
 
-              <div className="flex justify-between items-start pl-2">
+              <div className="flex justify-between items-start">
                 <div>
-                  <h1 className="text-3xl font-black tracking-tighter uppercase text-white leading-none">{coin}</h1>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded text-gray-300 font-mono flex items-center gap-1">
-                      <Clock size={10} /> {getTfLabel(timeframe)} PLAN
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-4xl font-black tracking-tighter uppercase text-white">{coin}</h1>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${levels.isSell ? "border-red-500/30 text-red-400 bg-red-500/10" : "border-green-500/30 text-green-400 bg-green-500/10"}`}>
+                      {levels.isSell ? "SHORT" : "LONG"}
                     </span>
                   </div>
-                </div>
-
-                <div className="text-right">
-                  <div
-                    className={`px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest inline-block mb-1 ${
-                      levels.isSell ? "bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]" : "bg-green-500 text-white shadow-[0_0_15px_rgba(74,222,128,0.4)]"
-                    }`}
-                  >
-                    {levels.isSell ? "SHORT" : "LONG"}
+                  <div className="flex items-center gap-2 mt-2 text-gray-400">
+                    <Clock size={12} />
+                    <span className="text-xs font-mono">{getTfLabel(timeframe)} STRATEGY</span>
                   </div>
-                  {!levels.isActiveSignal && (
-                    <p className="text-[9px] text-orange-400 mt-1 flex items-center justify-end gap-1">
-                      <AlertTriangle size={8} /> NEUTRAL MODE
-                    </p>
+                </div>
+                <div className="text-right">
+                  {!levels.isActiveSignal ? (
+                    <span className="text-orange-400 text-xs font-bold flex items-center gap-1">
+                      <AlertTriangle size={12} /> NEUTRAL
+                    </span>
+                  ) : (
+                    <span className="text-gray-500 text-[10px] font-mono">{time} WIB</span>
                   )}
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Body Content */}
-            <div className="p-6 space-y-5">
-              {/* Entry Point */}
-              <div className="flex items-center justify-between p-4 bg-black/40 rounded-xl border border-white/5">
+          {/* 2. NUMBERS GRID (Full Height & No Gaps) */}
+          <div className="bg-[#0a0a0a] rounded-3xl p-1 shadow-xl flex-1 flex flex-col">
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 flex-1 flex flex-col gap-6">
+              {/* Entry (Top) */}
+              <div className="flex items-center justify-between p-4 bg-black/40 rounded-xl border border-white/5 shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-blue-500/10 rounded-lg text-blue-400 ring-1 ring-blue-500/20">
-                    <Crosshair size={18} />
+                  <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400">
+                    <Crosshair size={20} />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Entry Price</p>
-                    <p className="text-xl font-mono text-white tracking-tight">${formatPrice(price)}</p>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Entry Zone</p>
+                    <p className="text-2xl font-mono text-white tracking-tight">${formatPrice(price)}</p>
                   </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] text-gray-500 bg-white/5 px-2 py-1 rounded">Current</span>
                 </div>
               </div>
 
-              {/* Stop Loss & TP 1 Grid */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-4 bg-red-500/5 border border-red-500/10 rounded-xl">
-                  <div className="flex items-center gap-2 mb-3 text-red-400">
-                    <ShieldAlert size={14} />
+              {/* SL & TP1 (Middle - SEKARANG MEMENUHI RUANG / FLEX-1) */}
+              <div className="grid grid-cols-2 gap-4 flex-1">
+                <div className="p-4 bg-red-500/5 border border-red-500/10 rounded-xl hover:bg-red-500/10 transition-colors h-full flex flex-col justify-center">
+                  <div className="flex items-center gap-2 mb-2 text-red-400">
+                    <ShieldAlert size={16} />
                     <span className="text-[10px] font-bold uppercase tracking-wider">Stop Loss</span>
                   </div>
-                  <p className="text-lg font-mono text-white/90">${formatPrice(levels.sl)}</p>
-                  <p className="text-[10px] text-red-400/50 mt-0.5 font-mono">{(levels.riskPercent * 100).toFixed(1)}% Risk</p>
+                  <p className="text-2xl font-mono text-white/90">${formatPrice(levels.sl)}</p>
+                  <p className="text-[10px] text-red-400/50 mt-1 font-mono">-{(levels.riskPercent * 100).toFixed(1)}% Risk</p>
                 </div>
-
-                <div className="p-4 bg-green-500/5 border border-green-500/10 rounded-xl">
-                  <div className="flex items-center gap-2 mb-3 text-green-400">
-                    <Target size={14} />
+                <div className="p-4 bg-green-500/5 border border-green-500/10 rounded-xl hover:bg-green-500/10 transition-colors h-full flex flex-col justify-center">
+                  <div className="flex items-center gap-2 mb-2 text-green-400">
+                    <Target size={16} />
                     <span className="text-[10px] font-bold uppercase tracking-wider">TP 1 (Safe)</span>
                   </div>
-                  <p className="text-lg font-mono text-white/90">${formatPrice(levels.tp1)}</p>
-                  <p className="text-[10px] text-green-400/50 mt-0.5 font-mono">{(levels.reward1 * 100).toFixed(1)}% Gain</p>
+                  <p className="text-2xl font-mono text-white/90">${formatPrice(levels.tp1)}</p>
+                  <p className="text-[10px] text-green-400/50 mt-1 font-mono">+{(levels.reward1 * 100).toFixed(1)}% Gain</p>
                 </div>
               </div>
 
-              {/* Extended Targets */}
-              <div className="space-y-2 pt-2">
-                <div className="flex justify-between items-center p-3 rounded-xl bg-white/[0.02] border border-white/5 group">
+              {/* TP 2 & 3 (Bottom) */}
+              <div className="space-y-3 shrink-0">
+                {/* TP 2 */}
+                <div className="flex justify-between items-center p-3 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all cursor-default group">
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 text-[10px] font-bold">2</div>
-                    <span className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">Target Moderate</span>
+                    <div className="w-6 h-6 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 text-[10px] font-bold group-hover:bg-green-500/20 transition-colors">2</div>
+                    <span className="text-[11px] text-gray-400 uppercase tracking-wider font-medium group-hover:text-gray-300">TP Moderate</span>
                   </div>
-                  <span className="font-mono text-gray-300 text-sm">${formatPrice(levels.tp2)}</span>
+                  <span className="font-mono text-gray-300 group-hover:text-white transition-colors">${formatPrice(levels.tp2)}</span>
                 </div>
 
-                <div className="flex justify-between items-center p-3 rounded-xl bg-gradient-to-r from-violet-500/5 to-transparent border border-violet-500/10 group">
+                {/* TP 3 */}
+                <div className="flex justify-between items-center p-3 rounded-xl bg-violet-500/[0.03] border border-violet-500/10 hover:bg-violet-500/[0.08] hover:border-violet-500/20 transition-all cursor-default group">
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-violet-500/10 flex items-center justify-center text-violet-400 text-[10px] font-bold">3</div>
-                    <span className="text-[11px] text-violet-300/70 uppercase tracking-wider font-medium">Moonbag Target</span>
+                    <div className="w-6 h-6 rounded-full bg-violet-500/10 flex items-center justify-center text-violet-400 text-[10px] font-bold group-hover:bg-violet-500/20 transition-colors">3</div>
+                    <span className="text-[11px] text-violet-300/70 uppercase tracking-wider font-medium group-hover:text-violet-300">TP Moonbag</span>
                   </div>
-                  <span className="font-mono text-violet-200 text-sm">${formatPrice(levels.tp3)}</span>
+                  <span className="font-mono text-violet-200 group-hover:text-white transition-colors">${formatPrice(levels.tp3)}</span>
                 </div>
               </div>
-
-              {/* === AI INSIGHT YANG NYATA === */}
-              <div className="bg-white/[0.03] rounded-xl p-4 border border-white/5 mt-2">
-                <div className="flex items-end justify-between mb-2">
-                  <div className="flex items-center gap-2 text-gray-400">
-                    <BarChart2 size={14} className="text-blue-400" />
-                    <span className="text-[10px] uppercase font-bold tracking-widest">AI Confidence</span>
-                  </div>
-                  <span className={`text-xl font-mono font-bold ${levels.confidence > 80 ? "text-green-400" : "text-yellow-400"}`}>{levels.confidence}%</span>
-                </div>
-
-                <div className="h-1.5 w-full bg-black/50 rounded-full overflow-hidden mb-4">
-                  <div className={`h-full rounded-full transition-all duration-1000 ${levels.confidence > 80 ? "bg-green-500" : "bg-yellow-500"}`} style={{ width: `${levels.confidence}%` }}></div>
-                </div>
-
-                <div className="flex gap-3 items-start">
-                  <div className="mt-0.5 min-w-[16px]">
-                    <Zap size={14} className={levels.isSell ? "text-red-400" : "text-yellow-400"} fill="currentColor" />
-                  </div>
-                  <div>
-                    <p className="text-[11px] text-gray-300 leading-relaxed font-light">
-                      <span className="font-bold text-gray-200">Logic: </span>
-                      {levels.reason}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              {/* ========================================= */}
-            </div>
-
-            <div className="px-6 pb-6 pt-2">
-              <p className="text-center text-[11px] leading-relaxed text-gray-500 font-mono border-t border-white/5 pt-4">
-                Generated by PRYDEXI AI • Time: {time} WIB <br />
-                <span className="opacity-70">DYOR: Not Financial Advice</span>
-              </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-black/40 p-4 border border-white/10 rounded-2xl mt-4">
-          <div className="w-full">
-            <CopyButton data={analysisData} />
+        {/* --- RIGHT COLUMN: INTEL & ACTION (5/12) --- */}
+        <div className="lg:col-span-5 flex flex-col gap-6 h-full">
+          {/* 3. AI INTEL CARD */}
+          <div className="bg-[#0a0a0a] rounded-3xl p-1 shadow-xl shrink-0">
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <Zap size={100} />
+              </div>
+
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 text-gray-400 mb-4">
+                  <BarChart2 size={16} className="text-blue-400" />
+                  <span className="text-[10px] uppercase font-bold tracking-widest">AI Confidence</span>
+                </div>
+
+                <div className="flex items-end justify-between mb-2">
+                  <span className="text-4xl font-mono font-black text-white">{levels.confidence}%</span>
+                  <span className={`text-xs font-bold px-2 py-1 rounded ${levels.confidence > 80 ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"}`}>
+                    {levels.confidence > 80 ? "HIGH PROBABILITY" : "MODERATE POTENTIAL"}
+                  </span>
+                </div>
+                <div className="h-2 w-full bg-black/50 rounded-full overflow-hidden mb-6">
+                  <div className={`h-full rounded-full transition-all duration-1000 ${levels.confidence > 80 ? "bg-green-500" : "bg-yellow-500"}`} style={{ width: `${levels.confidence}%` }}></div>
+                </div>
+
+                {/* AI Logic: DIPERJELAS & DESKRIPTIF */}
+                <div className="bg-white/[0.05] rounded-xl p-4 border border-white/10 shadow-inner">
+                  <div className="flex gap-3 items-start">
+                    <div className="mt-0.5 min-w-[16px]">
+                      <Zap size={16} className={levels.isSell ? "text-red-400" : "text-yellow-400"} fill="currentColor" />
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-gray-200 leading-relaxed font-light">
+                        <span className="font-black text-white block mb-1 tracking-wide">AI ANALYSIS:</span>
+                        {levels.reason}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 4. EXECUTION HUB */}
+          <div className="bg-[#0a0a0a] rounded-3xl p-1 shadow-xl flex-1 flex flex-col">
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 flex-1 flex flex-col justify-between">
+              <div className="space-y-6">
+                <div className="w-full">
+                  <div className="mb-2 flex items-center gap-2 text-gray-400">
+                    <CheckCircle2 size={14} />
+                    <span className="text-[10px] uppercase font-bold tracking-widest">Share Signal</span>
+                  </div>
+                  <CopyButton data={analysisData} />
+                </div>
+
+                <div className="h-px bg-white/5 w-full" />
+
+                <div className="w-full">
+                  <div className="mb-3 flex items-center gap-2 text-gray-400">
+                    <Coins size={14} className="text-violet-400" />
+                    <span className="text-[10px] uppercase font-bold tracking-widest">Execute On</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {EXCHANGES.map((ex) => (
+                      <a
+                        key={ex.name}
+                        href={ex.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`flex flex-col items-center justify-center p-3 rounded-xl border border-white/5 bg-white/[0.02] transition-all duration-300 group ${ex.color}`}
+                      >
+                        <div className="flex items-center gap-1">
+                          <span className="font-black text-white text-sm tracking-wider group-hover:text-violet-200">{ex.name}</span>
+                          <ExternalLink size={10} className="text-gray-600 group-hover:text-white transition-colors" />
+                        </div>
+                        <span className="text-[9px] text-gray-500 font-mono mt-0.5 uppercase">{ex.label}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer Disclaimer (Sharp & Clear) */}
+              <div className="bg-white/[0.05] border border-white/10 rounded-xl p-4 text-center mt-6">
+                <p className="text-[11px] text-gray-300 font-bold mb-1 flex items-center justify-center gap-1">
+                  <AlertTriangle size={12} className="text-yellow-500" /> DISCLAIMER
+                </p>
+                <p className="text-[10px] text-gray-400 leading-relaxed">
+                  Not Financial Advice. Always Do Your Own Research (DYOR). <br />
+                  Generated by <span className="text-violet-400 font-black">Prydexi AI System</span>.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -233,6 +233,11 @@ export default function Home() {
                         sentiment: data.sentiment,
                         time: data.lastUpdated,
                         tf: timeframe,
+                        // --- TAMBAHKAN DATA TEKNIKAL DI BAWAH INI BIAR LENGKAP ---
+                        rsi: data.rsi,
+                        sma: data.sma,
+                        macd: data.macd.val, // Kirim nilai MACD
+                        score: data.sentimentScore.toString(), // Kirim skor meteran
                       }).toString();
                       router.push(`/recommendation?${query}`);
                     }}

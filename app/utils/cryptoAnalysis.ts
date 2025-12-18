@@ -30,31 +30,46 @@ export const COINS = [
 
 export type Timeframe = "SHORT" | "MEDIUM" | "LONG";
 
-export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "MEDIUM") {
+// Interface untuk Return Data agar TypeScript aman
+export interface CryptoAnalysisResult {
+  price: number;
+  chartData: any[];
+  rsi: string;
+  sma: string;
+  macd: {
+    val: string;
+    signal: string;
+    histogram: string;
+  };
+  signal: string;
+  sentiment: string;
+  color: string;
+  borderColor: string;
+  lastUpdated: string;
+  sentimentScore: number;
+}
+
+export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "MEDIUM"): Promise<CryptoAnalysisResult | null> {
   try {
     // 1. Tentukan Durasi Chart (OHLC)
     let days = "30";
     if (timeframe === "SHORT") days = "1";
     if (timeframe === "LONG") days = "365";
 
-    // --- REQUEST 1: HARGA REAL-TIME (The Fix!) ---
-    // Kita panggil endpoint 'markets' untuk harga yang pasti akurat dan sama di semua timeframe
+    // --- REQUEST 1: HARGA REAL-TIME ---
     const priceUrl = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coinId}&order=market_cap_desc&per_page=1&page=1&sparkline=false`;
 
     // --- REQUEST 2: DATA CHART (OHLC) ---
-    // Endpoint ini hanya untuk gambar grafik dan hitung indikator
     const ohlcUrl = `https://api.coingecko.com/api/v3/coins/${coinId}/ohlc?vs_currency=usd&days=${days}`;
 
-    // Jalankan kedua request secara paralel (Promise.all) agar cepat
     const [priceRes, ohlcRes] = await Promise.all([axios.get(priceUrl), axios.get(ohlcUrl)]);
 
-    // --- PROSES HARGA (Market Data) ---
-    // Ambil harga dari request pertama. Ini harga "The Truth".
+    // --- PROSES HARGA ---
     const marketData = priceRes.data[0];
     if (!marketData) throw new Error("NOT_FOUND");
 
     const currentPrice = marketData.current_price;
-    const priceChange24h = marketData.price_change_percentage_24h;
+    // const priceChange24h = marketData.price_change_percentage_24h; // Tidak dipakai di logic baru
 
     // --- PROSES CHART (OHLC Data) ---
     const rawData = ohlcRes.data;
@@ -62,13 +77,10 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
     // Validasi data chart
     if (!rawData || rawData.length < 10) {
       console.warn(`Data chart ${coinId} kurang.`);
-      // Jika short chart gagal, bisa return null atau coba medium (opsional)
-      // Disini kita return null dulu biar aman
       return null;
     }
 
     const closePrices = rawData.map((d: any) => d[4]);
-    // Perhatikan: Kita TIDAK mengambil currentPrice dari closePrices lagi.
 
     // Siapkan Data Chart untuk UI
     const chartData = rawData.map((d: any) => ({
@@ -82,11 +94,11 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
     // --- HITUNG INDIKATOR ---
     // 1. RSI
     const rsiValues = RSI.calculate({ values: closePrices, period: 14 });
-    const currentRSI = rsiValues[rsiValues.length - 1];
+    const currentRSI = rsiValues[rsiValues.length - 1] || 50;
 
     // 2. SMA
     const smaValues = SMA.calculate({ values: closePrices, period: 50, SimpleMovingAverage: [] } as any);
-    const currentSMA = smaValues[smaValues.length - 1];
+    const currentSMA = smaValues[smaValues.length - 1] || currentPrice;
 
     // 3. MACD
     const macdInput = {
@@ -98,56 +110,68 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
       SimpleMASignal: false,
     } as any;
     const macdValues = MACD.calculate(macdInput);
-    const currentMACD = macdValues[macdValues.length - 1];
+    const currentMACD = macdValues[macdValues.length - 1] || { MACD: 0, signal: 0, histogram: 0 };
 
-    // --- LOGIKA SINYAL ---
-    let signal = "HOLD";
-    let sentiment = "Neutral";
+    // ==========================================
+    // --- NEW LOGIC: STRICT CONFLUENCE SCORE ---
+    // ==========================================
+
+    let score = 0;
+    const rsiVal = currentRSI;
+    const macdHist = currentMACD.histogram || 0;
+    const smaVal = currentSMA;
+
+    // 1. ANALISA RSI (Momentum)
+    // Poin Besar untuk kondisi Ekstrem
+    if (rsiVal < 30) score += 2; // Oversold Parah (Diskon) -> Strong Buy
+    else if (rsiVal < 45) score += 1; // Agak Murah -> Buy
+    else if (rsiVal > 70) score -= 2; // Overbought Parah (Mahal) -> Strong Sell
+    else if (rsiVal > 55) score -= 1; // Agak Mahal -> Sell
+
+    // 2. ANALISA MACD (Trend Direction)
+    if (macdHist > 0) score += 1; // Bullish
+    else score -= 1; // Bearish
+
+    // 3. ANALISA SMA (Trend Jangka Panjang)
+    if (currentPrice > smaVal) score += 1; // Uptrend
+    else score -= 1; // Downtrend
+
+    // --- KEPUTUSAN FINAL BERDASARKAN SKOR ---
+    let signal = "NEUTRAL";
+    let sentiment = "Sideways";
     let color = "text-gray-400";
     let borderColor = "border-gray-500";
-    let bullishScore = 0;
 
-    // RSI Check
-    if (currentRSI && currentRSI < 30) bullishScore++;
-
-    // SMA Check (Harga Realtime vs SMA Chart)
-    if (currentSMA && currentPrice > currentSMA) bullishScore++;
-
-    // MACD Check
-    if (currentMACD && currentMACD.MACD !== undefined && currentMACD.signal !== undefined && currentMACD.MACD > currentMACD.signal) {
-      bullishScore++;
-    }
-
-    // Penentuan Label
-    if (bullishScore === 3) {
+    if (score >= 3) {
       signal = "STRONG BUY";
-      sentiment = "Perfect Uptrend";
-      color = "text-green-400";
-      borderColor = "border-green-500";
-    } else if (bullishScore === 2) {
+      sentiment = "Bullish Extreme";
+      color = "text-emerald-400"; // Hijau Neon Terang
+      borderColor = "border-emerald-500";
+    } else if (score >= 1) {
       signal = "BUY";
-      sentiment = "Good Potential";
+      sentiment = "Bullish";
       color = "text-green-400";
       borderColor = "border-green-500";
-    } else if (currentRSI > 70) {
-      signal = "SELL";
-      sentiment = "Overbought";
-      color = "text-red-500";
+    } else if (score <= -3) {
+      signal = "STRONG SELL";
+      sentiment = "Bearish Extreme";
+      color = "text-red-500"; // Merah Terang
       borderColor = "border-red-500";
+    } else if (score <= -1) {
+      signal = "SELL";
+      sentiment = "Bearish";
+      color = "text-red-400";
+      borderColor = "border-red-400";
     } else {
       signal = "WAIT / HOLD";
-      sentiment = "Market Indecisive";
+      sentiment = "Indecisive";
       color = "text-gray-400";
       borderColor = "border-gray-500";
     }
 
-    // Sentiment Score (Tambahan logika dari 24h change biar makin akurat)
-    let sentimentScore = currentRSI ? currentRSI / 100 : 0.5;
-    if (priceChange24h > 5) sentimentScore += 0.1; // Boost kalau lagi pump
-    if (priceChange24h < -5) sentimentScore -= 0.1; // Kurangi kalau lagi dump
-
-    // Clamp score 0-1
-    sentimentScore = Math.max(0, Math.min(1, sentimentScore));
+    // Sentiment Score untuk Gauge (0-100)
+    // Kita gunakan RSI sebagai representasi visual sentimen pasar yang paling umum
+    const sentimentScore = currentRSI;
 
     const now = new Date();
     const timeString = now.toLocaleTimeString("id-ID", {
@@ -158,23 +182,21 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
     });
 
     return {
-      price: currentPrice, // <-- HARGA PASTI STABIL SEKARANG
+      price: currentPrice,
       chartData: chartData,
-      rsi: currentRSI ? currentRSI.toFixed(2) : "N/A",
-      sma: currentSMA ? currentSMA.toFixed(2) : "N/A",
-      macd: currentMACD
-        ? {
-            val: currentMACD.MACD?.toFixed(2),
-            signal: currentMACD.signal?.toFixed(2),
-            histogram: currentMACD.histogram?.toFixed(2),
-          }
-        : { val: 0, signal: 0, histogram: 0 },
+      rsi: currentRSI.toFixed(2),
+      sma: currentSMA.toFixed(2),
+      macd: {
+        val: currentMACD.MACD?.toFixed(2) || "0",
+        signal: currentMACD.signal?.toFixed(2) || "0",
+        histogram: currentMACD.histogram?.toFixed(2) || "0",
+      },
       signal,
       sentiment,
       color,
       borderColor,
       lastUpdated: timeString,
-      sentimentScore,
+      sentimentScore, // Mengembalikan nilai 0-100
     };
   } catch (error: any) {
     if (axios.isAxiosError(error)) {

@@ -1,9 +1,8 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { ArrowLeft, Target, ShieldAlert, Crosshair, Wallet, AlertTriangle, Clock, Zap, BarChart2 } from "lucide-react";
+import { ArrowLeft, Target, ShieldAlert, Crosshair, AlertTriangle, Clock, Zap, BarChart2 } from "lucide-react";
 import { useEffect, useState, Suspense } from "react";
-// Import tombol copy
 import CopyButton from "../components/CopyButton";
 
 export default function RecommendationPage() {
@@ -18,12 +17,18 @@ function TradingPlanContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Ambil data dari URL
+  // 1. AMBIL DATA NYATA DARI URL
   const coin = searchParams.get("coin") || "Unknown";
   const price = parseFloat(searchParams.get("price") || "0");
   const signal = searchParams.get("signal") || "HOLD";
   const time = searchParams.get("time") || "-";
   const timeframe = searchParams.get("tf") || "MEDIUM";
+
+  // Data Teknikal Tambahan (Yang baru kita tambahkan di tombol)
+  const rsi = parseFloat(searchParams.get("rsi") || "50");
+  const sma = parseFloat(searchParams.get("sma") || "0");
+  const macdVal = parseFloat(searchParams.get("macd") || "0");
+  const score = parseFloat(searchParams.get("score") || "50"); // Ini Score RSI/Sentiment (0-100)
 
   const [levels, setLevels] = useState<any>(null);
 
@@ -35,31 +40,17 @@ function TradingPlanContent() {
   }, [price, signal, timeframe]);
 
   const calculateLevels = () => {
-    // Normalisasi sinyal
     const signalUpper = signal.toUpperCase();
     const isSell = signalUpper.includes("SELL");
     const isBuy = signalUpper.includes("BUY");
     const isNeutral = !isSell && !isBuy;
 
-    // 1. Logika Tingkat Risiko & Reward (Tetap sama)
-    let riskPercent = 0.02;
-    let reward1 = 0.03;
-    let reward2 = 0.06;
-    let reward3 = 0.12;
+    // --- LOGIKA LEVEL HARGA (Risk & Reward) ---
+    let riskPercent = timeframe === "SHORT" ? 0.005 : timeframe === "LONG" ? 0.05 : 0.02;
+    let reward1 = timeframe === "SHORT" ? 0.01 : timeframe === "LONG" ? 0.1 : 0.03;
+    let reward2 = timeframe === "SHORT" ? 0.02 : timeframe === "LONG" ? 0.2 : 0.06;
+    let reward3 = timeframe === "SHORT" ? 0.04 : timeframe === "LONG" ? 0.5 : 0.12;
 
-    if (timeframe === "SHORT") {
-      riskPercent = 0.005;
-      reward1 = 0.01;
-      reward2 = 0.02;
-      reward3 = 0.04;
-    } else if (timeframe === "LONG") {
-      riskPercent = 0.05;
-      reward1 = 0.1;
-      reward2 = 0.2;
-      reward3 = 0.5;
-    }
-
-    // 2. Hitung Harga SL/TP (Tetap sama)
     let sl, tp1, tp2, tp3;
     if (isSell) {
       sl = price * (1 + riskPercent);
@@ -73,49 +64,48 @@ function TradingPlanContent() {
       tp3 = price * (1 + reward3);
     }
 
-    // 3. LOGIKA CONFIDENCE & REASONING (UPDATED: LEBIH VARIATIF)
-    const baseConfidence = timeframe === "LONG" ? 85 : timeframe === "SHORT" ? 80 : 82;
-    let dynamicConfidence = baseConfidence + Math.floor(Math.random() * 8); // Variasi 0-7%
-    if (dynamicConfidence > 98) dynamicConfidence = 98;
+    // --- LOGIKA ALASAN DINAMIS (REAL DATA) ---
+    // Kita bangun kalimat berdasarkan data RSI & MACD yang sebenarnya
+    let reasonParts = [];
 
-    // --- DATABASE ALASAN (BANK KALIMAT) ---
-    const buyReasons = [
-      "Terdeteksi lonjakan volume di area Demand. Harga memantul dari EMA-200 dan RSI keluar dari zona Oversold. Momentum bullish kuat.",
-      "Golden Cross terkonfirmasi pada timeframe 4H. Buyer mendominasi order book, menciptakan tekanan beli yang signifikan.",
-      "Pola Bullish Engulfing terbentuk setelah koreksi minor. Indikator MACD menunjukkan crossover positif menuju tren naik.",
-      "Harga berhasil breakout dari fase akumulasi. Support level bertahan kuat, target kenaikan menuju resistance terdekat.",
-      "Hidden Bullish Divergence terlihat pada osilator RSI. Struktur pasar membentuk Higher Low, menandakan tren positif.",
-    ];
+    // 1. Analisa RSI
+    if (rsi < 30) reasonParts.push("RSI berada di zona Oversold (Murah), potensi pantulan tinggi.");
+    else if (rsi > 70) reasonParts.push("RSI menyentuh Overbought (Jenuh Beli), waspada koreksi.");
+    else if (rsi > 50 && isBuy) reasonParts.push("RSI di atas 50 mendukung momentum Bullish.");
+    else if (rsi < 50 && isSell) reasonParts.push("RSI di bawah 50 mengonfirmasi tekanan jual.");
 
-    const sellReasons = [
-      "Harga gagal menembus resistance kunci. Terbentuk pola Double Top dengan volume yang semakin menipis.",
-      "Indikator RSI masuk zona Overbought (jenuh beli). Tekanan jual mulai meningkat di area supply psikologis.",
-      "Death Cross terdeteksi pada MA-50 dan MA-200. Struktur pasar berubah menjadi Bearish (Lower High terbentuk).",
-      "Breakdown dari pola Rising Wedge. Momentum bearish valid, waspadai penurunan lebih lanjut ke area support bawah.",
-      "Penolakan harga (Rejection) yang kuat dengan candle sumbu panjang di atas. Indikasi smart money sedang distribusi.",
-    ];
+    // 2. Analisa MACD
+    if (macdVal > 0) reasonParts.push("MACD Histogram positif menandakan tren naik.");
+    else reasonParts.push("MACD Histogram negatif menandakan tren turun.");
 
-    const neutralReasons = [
-      "Pasar sedang dalam fase konsolidasi (sideways). Belum ada konfirmasi breakout yang valid. Wait and See.",
-      "Volatilitas menurun drastis. Bollinger Bands menyempit menandakan pergerakan besar akan segera terjadi, namun arah belum jelas.",
-      "Harga tertahan di antara Support dan Resistance. Tidak ada dominasi buyer maupun seller saat ini.",
-      "Indikator teknikal bertentangan (Mixed Signals). Disarankan menunggu konfirmasi candle penutup sebelum mengambil posisi.",
-    ];
+    // 3. Analisa SMA
+    if (price > sma) reasonParts.push("Harga bergerak di atas rata-rata (Uptrend).");
+    else reasonParts.push("Harga berada di bawah rata-rata (Downtrend).");
 
-    // --- PILIH ALASAN SECARA ACAK ---
-    let selectedReason = "";
+    // Gabungkan kalimat
+    let finalReason = reasonParts.join(" ");
 
-    if (isSell) {
-      // Pilih 1 kalimat acak dari daftar sellReasons
-      selectedReason = sellReasons[Math.floor(Math.random() * sellReasons.length)];
-    } else if (isBuy) {
-      // Pilih 1 kalimat acak dari daftar buyReasons
-      selectedReason = buyReasons[Math.floor(Math.random() * buyReasons.length)];
+    // Fallback jika netral
+    if (isNeutral) finalReason = "Indikator teknikal menunjukkan sinyal campuran (Mixed Signal). Pasar sedang konsolidasi, disarankan Wait & See.";
+
+    // --- LOGIKA CONFIDENCE BERDASARKAN SKOR ---
+    // Skor sentimen 0-100.
+    // Buy Confidence = (100 - Score) jika rendah makin bagus
+    // Sell Confidence = Score jika tinggi makin bagus
+
+    let confidenceVal = 0;
+    if (isBuy) {
+      // Kalau Buy, RSI rendah (misal 30) itu bagus. Jadi confidence = 100 - 30 = 70 + boost
+      confidenceVal = 100 - rsi + 10;
+    } else if (isSell) {
+      // Kalau Sell, RSI tinggi (misal 70) itu bagus.
+      confidenceVal = rsi + 10;
     } else {
-      // Pilih 1 kalimat acak dari daftar neutralReasons
-      selectedReason = neutralReasons[Math.floor(Math.random() * neutralReasons.length)];
-      dynamicConfidence -= 15; // Turunkan confidence kalau netral
+      confidenceVal = 50;
     }
+
+    // Clamp 0-99
+    confidenceVal = Math.min(99, Math.max(40, confidenceVal));
 
     setLevels({
       sl,
@@ -127,8 +117,8 @@ function TradingPlanContent() {
       riskPercent,
       reward1,
       timeframeName: timeframe,
-      confidence: dynamicConfidence,
-      reason: selectedReason, // Gunakan kalimat yang terpilih acak
+      confidence: Math.round(confidenceVal), // Confidence asli hitungan
+      reason: finalReason, // Alasan asli dari data
     });
   };
 
@@ -143,32 +133,8 @@ function TradingPlanContent() {
     return "SWING";
   };
 
-  // Handle Error State
-  if (!levels) {
-    return (
-      <main className="min-h-screen bg-[#050505] text-white p-6 font-sans flex items-center justify-center relative overflow-hidden">
-        <div className="absolute top-[-20%] right-[-20%] w-[500px] h-[500px] bg-red-900/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="w-full max-w-md text-center space-y-6 z-10">
-          <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto ring-1 ring-white/10">
-            <AlertTriangle size={32} className="text-red-500 opacity-80" />
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-xl font-bold tracking-tight">Data Unavailable</h2>
-            <p className="text-sm text-gray-500 leading-relaxed px-4">
-              Unable to fetch data.
-              <br />
-              <span className="text-gray-600">Try switching to Medium Term.</span>
-            </p>
-          </div>
-          <button onClick={() => router.back()} className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white text-sm font-medium rounded-xl transition-all border border-white/5">
-            Back to Dashboard
-          </button>
-        </div>
-      </main>
-    );
-  }
+  if (!levels) return <div className="text-white text-center p-10">Processing Data...</div>;
 
-  // Data untuk tombol Copy (Mengambil dari state levels yang baru)
   const analysisData = {
     coinName: coin,
     coinSymbol: coin,
@@ -216,7 +182,7 @@ function TradingPlanContent() {
                   </div>
                   {!levels.isActiveSignal && (
                     <p className="text-[9px] text-orange-400 mt-1 flex items-center justify-end gap-1">
-                      <AlertTriangle size={8} /> SIMULATION
+                      <AlertTriangle size={8} /> NEUTRAL MODE
                     </p>
                   )}
                 </div>
@@ -278,9 +244,8 @@ function TradingPlanContent() {
                 </div>
               </div>
 
-              {/* === FITUR BARU: AI CONFIDENCE & LOGIC === */}
+              {/* === AI INSIGHT YANG NYATA === */}
               <div className="bg-white/[0.03] rounded-xl p-4 border border-white/5 mt-2">
-                {/* Confidence Meter */}
                 <div className="flex items-end justify-between mb-2">
                   <div className="flex items-center gap-2 text-gray-400">
                     <BarChart2 size={14} className="text-blue-400" />
@@ -289,19 +254,17 @@ function TradingPlanContent() {
                   <span className={`text-xl font-mono font-bold ${levels.confidence > 80 ? "text-green-400" : "text-yellow-400"}`}>{levels.confidence}%</span>
                 </div>
 
-                {/* Progress Bar Visual */}
                 <div className="h-1.5 w-full bg-black/50 rounded-full overflow-hidden mb-4">
                   <div className={`h-full rounded-full transition-all duration-1000 ${levels.confidence > 80 ? "bg-green-500" : "bg-yellow-500"}`} style={{ width: `${levels.confidence}%` }}></div>
                 </div>
 
-                {/* Text Penjelasan (Transparency) */}
                 <div className="flex gap-3 items-start">
                   <div className="mt-0.5 min-w-[16px]">
                     <Zap size={14} className={levels.isSell ? "text-red-400" : "text-yellow-400"} fill="currentColor" />
                   </div>
                   <div>
                     <p className="text-[11px] text-gray-300 leading-relaxed font-light">
-                      <span className="font-bold text-gray-200">Market Insight: </span>
+                      <span className="font-bold text-gray-200">Logic: </span>
                       {levels.reason}
                     </p>
                   </div>
@@ -310,7 +273,6 @@ function TradingPlanContent() {
               {/* ========================================= */}
             </div>
 
-            {/* Branding Footer */}
             <div className="px-6 pb-6 pt-2">
               <p className="text-center text-[11px] leading-relaxed text-gray-500 font-mono border-t border-white/5 pt-4">
                 Generated by PRYDEXI AI • Time: {time} WIB <br />
@@ -320,9 +282,7 @@ function TradingPlanContent() {
           </div>
         </div>
 
-        {/* Footer Action */}
         <div className="bg-black/40 p-4 border border-white/10 rounded-2xl mt-4">
-          {/* Hapus tombol Wallet, dan biarkan CopyButton sendirian agar Full Width */}
           <div className="w-full">
             <CopyButton data={analysisData} />
           </div>

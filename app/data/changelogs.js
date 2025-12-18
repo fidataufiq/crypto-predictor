@@ -1,5 +1,17 @@
 export const changelogData = [
   {
+    version: "v1.2.0",
+    date: "18 Dec 2025",
+    title: "Intelligence Core & Precision Upgrade",
+    type: "Major",
+    description: "Pembaruan masif pada logika inti AI dan aliran data untuk memastikan akurasi analisis 100% berbasis data.",
+    details: [
+      "Implementasi 'Strict Confluence Scoring': Mengganti logika sinyal sederhana menjadi sistem skor ketat (-4 s/d +4) yang menggabungkan bobot RSI, MACD, dan SMA.",
+      "Data-Driven Trading Plan: Menghapus logika random pada halaman rekomendasi. Alasan (Reasoning) dan Confidence Score kini digenerate secara dinamis berdasarkan data teknikal real-time.",
+      "Calibration Fix: Perbaikan skala pada 'Sentiment Gauge' (0-100) untuk visualisasi psikologi pasar yang presisi tanpa error rotasi jarum.",
+    ],
+  },
+  {
     version: "v1.1.0",
     date: "17 Dec 2025",
     title: "Visualization Engine Upgrade",

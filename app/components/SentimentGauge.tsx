@@ -6,10 +6,33 @@ import dynamic from "next/dynamic";
 const GaugeChart = dynamic(() => import("react-gauge-chart"), { ssr: false }) as any;
 
 interface GaugeProps {
-  score: number;
+  score: number; // Menerima angka 0 - 100 (misal: 45.5)
 }
 
 export default function SentimentGauge({ score }: GaugeProps) {
+  // 1. NORMALISASI UNTUK CHART (0 - 1)
+  // Library butuh 0.0 sampai 1.0, jadi kita bagi 100.
+  // Kita clamp (kunci) biar gak error kalau datanya aneh (misal -5 atau 120)
+  const percentForChart = Math.min(Math.max(score / 100, 0), 1);
+
+  // 2. LOGIKA TEKS & WARNA (Menggunakan Score Asli 0-100)
+  let statusText = "NEUTRAL";
+  let statusColor = "text-yellow-400";
+
+  if (score <= 30) {
+    statusText = "FEAR (BUY)";
+    statusColor = "text-emerald-400"; // Hijau/Buy (Kiri)
+  } else if (score <= 45) {
+    statusText = "FEAR";
+    statusColor = "text-green-400";
+  } else if (score >= 70) {
+    statusText = "EXTREME GREED (SELL)";
+    statusColor = "text-red-500"; // Merah/Sell (Kanan)
+  } else if (score >= 55) {
+    statusText = "GREED";
+    statusColor = "text-orange-400";
+  }
+
   return (
     <div className="flex flex-col items-center justify-center w-full relative">
       {/* Wrapper Gauge */}
@@ -17,9 +40,11 @@ export default function SentimentGauge({ score }: GaugeProps) {
         <GaugeChart
           id="gauge-chart-1"
           nrOfLevels={3}
-          colors={["#ef4444", "#eab308", "#22c55e"]}
+          // Urutan warna: Kiri (Hijau/Buy), Tengah (Kuning), Kanan (Merah/Sell)
+          // Sesuai filosofi RSI: Rendah = Buy, Tinggi = Sell
+          colors={["#10b981", "#fbbf24", "#ef4444"]}
           arcWidth={0.3}
-          percent={score}
+          percent={percentForChart} // <--- SUDAH DIBAGI 100 (AMAN)
           textColor="#ffffff"
           needleColor="#a78bfa"
           needleBaseColor="#a78bfa"
@@ -29,12 +54,13 @@ export default function SentimentGauge({ score }: GaugeProps) {
         />
       </div>
 
-      {/* Label Kustom: PERBAIKAN DI SINI */}
-      {/* Saya hapus margin negatif (-mt) dan ganti jadi margin positif kecil (mt-1) */}
-      {/* Jarum tidak akan menabrak angka lagi */}
+      {/* Label Kustom */}
       <div className="text-center mt-1 z-10 relative">
-        <p className="text-2xl font-black text-white leading-none">{(score * 100).toFixed(0)}</p>
-        <p className={`text-[10px] font-bold uppercase tracking-[0.2em] mt-1 ${score < 0.4 ? "text-red-400" : score > 0.6 ? "text-green-400" : "text-yellow-400"}`}>{score < 0.4 ? "FEAR" : score > 0.6 ? "GREED" : "NEUTRAL"}</p>
+        {/* Tampilkan angka asli (0-100), dibulatkan */}
+        <p className={`text-2xl font-black leading-none ${statusColor}`}>{score.toFixed(0)}</p>
+
+        {/* Status Teks */}
+        <p className={`text-[10px] font-bold uppercase tracking-[0.2em] mt-1 ${statusColor}`}>{statusText}</p>
       </div>
     </div>
   );

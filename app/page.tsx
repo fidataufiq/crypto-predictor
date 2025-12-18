@@ -11,7 +11,7 @@ import MarketStats from "./components/MarketStats";
 import InteractiveBackground from "./components/InteractiveBackground";
 import Link from "next/link";
 import SystemManual from "./components/SystemManual";
-import { RefreshCw, TrendingUp, Activity, BarChart3, Zap, Clock, ArrowRight, Layers, AlertCircle, Info } from "lucide-react";
+import { RefreshCw, TrendingUp, TrendingDown, Activity, BarChart3, Zap, Clock, ArrowRight, ArrowUpRight, ArrowDownRight, Layers, AlertCircle, Info } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
@@ -207,17 +207,40 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="col-span-2 p-3 rounded-xl bg-white/[0.03] border border-white/5 relative hover:bg-white/[0.05] transition-colors">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1 text-gray-400">
-                        <TrendingUp size={12} />
-                        <span className="text-[10px] font-bold uppercase">SMA Trend</span>
-                        <AcademyTooltip text="Jika Harga > SMA 50, tren sedang NAIK." />
+                  {/* === SMA TREND (FIXED TOOLTIP) === */}
+                  {/* 1. HAPUS 'overflow-hidden' DI SINI AGAR TOOLTIP BISA MUNCUL KELUAR */}
+                  <div className="col-span-2 p-4 rounded-xl bg-white/[0.03] border border-white/5 relative hover:bg-white/[0.05] transition-colors flex items-center justify-between group">
+                    {/* 2. TAMBAHKAN 'rounded-xl' DI SINI AGAR GLOW TETAP RAPI (TIDAK BOCOR DI SUDUT) */}
+                    <div className={`absolute inset-0 opacity-10 blur-none rounded-xl transition-colors duration-500 ${data.price > Number(data.sma) ? "bg-green-500" : "bg-red-500"}`} />
+
+                    {/* Kiri: Label & Penjelasan */}
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className={`p-1.5 rounded-md ${data.price > Number(data.sma) ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
+                          {data.price > Number(data.sma) ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Trend Arah Pasar</span>
+
+                        {/* Tooltip sekarang aman karena parent tidak overflow-hidden */}
+                        <AcademyTooltip text="Garis SMA 50 adalah 'Rata-rata Harga'. Jika harga sekarang di atas rata-rata, berarti pasar sedang SEMANGAT NAIK." />
                       </div>
-                      <span className="text-xs font-mono text-gray-300">${data.sma}</span>
+
+                      {/* Status Besar & Jelas */}
+                      <div className="flex flex-col">
+                        <h3 className={`text-lg font-black tracking-wide ${data.price > Number(data.sma) ? "text-green-400" : "text-red-400"}`}>{data.price > Number(data.sma) ? "UPTREND (NAIK)" : "DOWNTREND (TURUN)"}</h3>
+                        <p className="text-[10px] text-gray-500 mt-0.5">
+                          Harga saat ini <span className="text-white font-mono">${data.price.toLocaleString()}</span> berada
+                          {data.price > Number(data.sma) ? " DI ATAS " : " DI BAWAH "}
+                          rata-rata <span className="text-gray-400 font-mono">(${Number(data.sma).toLocaleString()})</span>.
+                        </p>
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-800 h-1 rounded-full overflow-hidden mt-1 flex">
-                      <div className={`h-full ${data.price > Number(data.sma) ? "bg-violet-500 w-full" : "bg-gray-600 w-1/2"}`} />
+
+                    {/* Kanan: Visual Indikator Simpel */}
+                    <div className="relative z-10 hidden sm:block">
+                      <div className={`flex flex-col items-center justify-center w-12 h-12 rounded-full border-2 ${data.price > Number(data.sma) ? "border-green-500/30 bg-green-500/10" : "border-red-500/30 bg-red-500/10"}`}>
+                        {data.price > Number(data.sma) ? <ArrowUpRight size={24} className="text-green-400" /> : <ArrowDownRight size={24} className="text-red-400" />}
+                      </div>
                     </div>
                   </div>
                 </div>

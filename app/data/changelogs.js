@@ -1,5 +1,17 @@
 export const changelogData = [
   {
+    version: "v1.2.1",
+    date: "19 Dec 2025",
+    title: "UX Refinement & Visual Fixes",
+    type: "Improvement",
+    description: "Fokus pada penyempurnaan pengalaman pengguna (UX) untuk pemula dan perbaikan detail visual antarmuka.",
+    details: [
+      "Redesain kartu 'SMA Trend': Mengubah tampilan bar kaku menjadi panel status dengan label jelas ('UPTREND'/'DOWNTREND') dan indikator panah dinamis.",
+      "Fix Tooltip Visibility: Memperbaiki masalah tooltip yang terpotong pada kartu indikator dengan menyesuaikan properti overflow CSS.",
+      "Glow Effect Optimization: Menghaluskan efek pendaran cahaya (Ambient Glow) pada panel agar lebih rapi, elegan, dan tidak melebar keluar batas kontainer.",
+    ],
+  },
+  {
     version: "v1.2.0",
     date: "18 Dec 2025",
     title: "Intelligence Core & Precision Upgrade",

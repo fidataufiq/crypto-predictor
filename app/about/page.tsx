@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Github, Instagram, Mail, Terminal, Database, Bot, Coffee, AlertCircle, History, X, GitCommit, ChevronRight } from "lucide-react";
+import { ArrowLeft, Github, Instagram, Mail, Terminal, Database, Bot, Coffee, AlertCircle, History, X, GitCommit, ChevronRight, MessageSquarePlus } from "lucide-react";
 
 // Pastikan file ini sudah Anda buat di folder src/data/changelogs.js
 import { changelogData } from "../data/changelogs";
@@ -76,17 +76,29 @@ export default function AboutPage() {
               </p>
             </div>
 
-            {/* === BUTTON SYSTEM LOG === */}
-            <div className="flex justify-center">
+            {/* === ACTION BUTTONS (LOG & FEEDBACK) === */}
+            <div className="flex flex-col sm:flex-row justify-center gap-3">
+              {/* Button 1: System Log */}
               <button
                 onClick={() => setIsLogOpen(true)}
-                className="group relative flex items-center gap-3 px-5 py-2.5 bg-black hover:bg-zinc-900 border border-violet-500/30 hover:border-violet-400 rounded-lg transition-all duration-300 overflow-hidden shadow-[0_0_15px_-5px_rgba(139,92,246,0.3)]"
+                className="group relative flex items-center justify-center gap-3 px-5 py-2.5 bg-black hover:bg-zinc-900 border border-violet-500/30 hover:border-violet-400 rounded-lg transition-all duration-300 overflow-hidden shadow-[0_0_15px_-5px_rgba(139,92,246,0.3)] w-full sm:w-auto"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-violet-500/10 to-transparent -translate-x-full group-hover:translate-x-full duration-1000 transition-transform" />
                 <History size={14} className="text-violet-400 group-hover:text-white transition-colors" />
-                <span className="text-xs font-bold text-gray-300 group-hover:text-white tracking-widest uppercase">Access System Log</span>
-                <ChevronRight size={14} className="text-zinc-600 group-hover:text-violet-300 ml-1 transition-transform group-hover:translate-x-1" />
+                <span className="text-xs font-bold text-gray-300 group-hover:text-white tracking-widest uppercase">System Log</span>
               </button>
+
+              {/* Button 2: Feedback (BARU) */}
+              <a
+                href="https://forms.gle/YOUR_GOOGLE_FORM_ID_HERE" // Ganti dengan link Google Form asli nanti
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative flex items-center justify-center gap-3 px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg transition-all duration-300 overflow-hidden w-full sm:w-auto"
+              >
+                <MessageSquarePlus size={14} className="text-gray-400 group-hover:text-emerald-400 transition-colors" />
+                <span className="text-xs font-bold text-gray-400 group-hover:text-white tracking-widest uppercase">Feedback / Report</span>
+                <ChevronRight size={14} className="text-zinc-600 group-hover:text-emerald-300 ml-1 transition-transform group-hover:translate-x-1" />
+              </a>
             </div>
           </div>
 
@@ -164,7 +176,6 @@ export default function AboutPage() {
                 </h2>
                 <p className="text-zinc-500 text-xs mt-1 tracking-wider uppercase">Architecture Revision History</p>
               </div>
-              {/* === PERBAIKAN DISINI: Menambahkan aria-label === */}
               <button onClick={() => setIsLogOpen(false)} className="p-2 hover:bg-white/10 rounded-full text-zinc-500 hover:text-white transition" aria-label="Close System Log">
                 <X size={20} />
               </button>

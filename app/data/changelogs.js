@@ -1,5 +1,28 @@
 export const changelogData = [
   {
+    version: "v1.5.0",
+    date: "23 Dec 2025",
+    title: "Asset Management & UI Polish",
+    type: "Major", // Major karena merubah struktur navigasi koin secara total
+    description: "Peningkatan signifikan pada antarmuka pemilihan aset untuk navigasi yang lebih profesional dan terstruktur.",
+    details: [
+      "Smart Categorization System: Mengimplementasikan pengelompokan aset otomatis pada dropdown selector (Major Assets, Infrastructure, Meme Economy, dll) agar lebih mudah dicari.",
+      "Priority Rendering: Logika UI baru yang secara otomatis memindahkan koin 'Favorit' ke grup paling atas (VIP Area) terpisah dari kategori lainnya.",
+      "Accessibility & UX Fixes: Menambahkan label aksesibilitas (aria-label) pada tombol interaktif dan memperbaiki bug event propagation saat memilih fitur favorit.",
+    ],
+  },
+  {
+    version: "v1.4.0",
+    date: "22 Dec 2025",
+    title: "Retention & Volatility Update",
+    type: "Feature",
+    description: "Peningkatan fitur untuk retensi pengguna dan kedalaman analisis volatilitas.",
+    details: [
+      "Fitur 'Smart Watchlist': Menambahkan kemampuan untuk menyimpan koin favorit (Bintang) yang akan otomatis muncul di urutan teratas tanpa perlu Login.",
+      "Bollinger Bands Integration: Memasukkan indikator volatilitas ke dalam 'Strict Scoring System'. Deteksi otomatis area Overbought (Upper Band) dan Oversold (Lower Band) untuk sinyal Reversal yang lebih akurat.",
+    ],
+  },
+  {
     version: "v1.3.0",
     date: "21 Dec 2025",
     title: "The Bento Grid & Narrative Intelligence",

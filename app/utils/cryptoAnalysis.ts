@@ -1,31 +1,34 @@
 import axios from "axios";
-import { RSI, SMA, MACD } from "technicalindicators";
+// 1. IMPORT BOLLINGER BANDS dari library
+import { RSI, SMA, MACD, BollingerBands } from "technicalindicators";
 
 // --- DAFTAR KOIN LENGKAP ---
 export const COINS = [
-  // MAJOR
-  { id: "bitcoin", name: "Bitcoin", symbol: "BTC", image: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png" },
-  { id: "ethereum", name: "Ethereum", symbol: "ETH", image: "https://assets.coingecko.com/coins/images/279/large/ethereum.png" },
-  { id: "solana", name: "Solana", symbol: "SOL", image: "https://assets.coingecko.com/coins/images/4128/large/solana.png" },
-  { id: "binancecoin", name: "BNB", symbol: "BNB", image: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png" },
+  // 💎 MAJOR ASSETS (Blue Chips)
+  { id: "bitcoin", name: "Bitcoin", symbol: "BTC", category: "Major Assets", image: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png" },
+  { id: "ethereum", name: "Ethereum", symbol: "ETH", category: "Major Assets", image: "https://assets.coingecko.com/coins/images/279/large/ethereum.png" },
+  { id: "solana", name: "Solana", symbol: "SOL", category: "Major Assets", image: "https://assets.coingecko.com/coins/images/4128/large/solana.png" },
+  { id: "binancecoin", name: "BNB", symbol: "BNB", category: "Major Assets", image: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png" },
 
-  // NEW & HOT
-  { id: "hyperliquid", name: "Hyperliquid", symbol: "HYPE", image: "https://assets.coingecko.com/coins/images/35534/large/hyperliquid.png" },
-  { id: "aster-2", name: "Aster", symbol: "ASTER", image: "https://assets.coingecko.com/coins/images/12504/large/uniswap-uni.png" },
-  { id: "astar", name: "Astar", symbol: "ASTR", image: "https://assets.coingecko.com/coins/images/22617/large/astar.png" },
+  // 🔥 NEW & TRENDING
+  { id: "hyperliquid", name: "Hyperliquid", symbol: "HYPE", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/35534/large/hyperliquid.png" },
+  { id: "aster-2", name: "Aster", symbol: "ASTER", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/12504/large/uniswap-uni.png" },
+  { id: "astar", name: "Astar", symbol: "ASTR", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/22617/large/astar.png" },
+  { id: "sui", name: "Sui", symbol: "SUI", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/26375/large/sui_asset.jpeg" },
+  { id: "render-token", name: "Render", symbol: "RNDR", category: "AI & DePIN", image: "https://assets.coingecko.com/coins/images/11636/large/rndr.png" },
 
-  // POPULAR ALTS
-  { id: "ripple", name: "XRP", symbol: "XRP", image: "https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png" },
-  { id: "cardano", name: "Cardano", symbol: "ADA", image: "https://assets.coingecko.com/coins/images/975/large/cardano.png" },
-  { id: "dogecoin", name: "Dogecoin", symbol: "DOGE", image: "https://assets.coingecko.com/coins/images/5/large/dogecoin.png" },
-  { id: "avalanche-2", name: "Avalanche", symbol: "AVAX", image: "https://assets.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png" },
-  { id: "polkadot", name: "Polkadot", symbol: "DOT", image: "https://assets.coingecko.com/coins/images/12171/large/polkadot.png" },
-  { id: "matic-network", name: "Polygon", symbol: "MATIC", image: "https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png" },
-  { id: "chainlink", name: "Chainlink", symbol: "LINK", image: "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png" },
-  { id: "shiba-inu", name: "Shiba Inu", symbol: "SHIB", image: "https://assets.coingecko.com/coins/images/11939/large/shiba.png" },
-  { id: "sui", name: "Sui", symbol: "SUI", image: "https://assets.coingecko.com/coins/images/26375/large/sui_asset.jpeg" },
-  { id: "render-token", name: "Render", symbol: "RNDR", image: "https://assets.coingecko.com/coins/images/11636/large/rndr.png" },
-  { id: "pepe", name: "Pepe", symbol: "PEPE", image: "https://assets.coingecko.com/coins/images/29850/large/pepe-token.jpeg" },
+  // 🏗️ INFRASTRUCTURE & LAYER 1
+  { id: "ripple", name: "XRP", symbol: "XRP", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png" },
+  { id: "cardano", name: "Cardano", symbol: "ADA", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/975/large/cardano.png" },
+  { id: "avalanche-2", name: "Avalanche", symbol: "AVAX", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png" },
+  { id: "polkadot", name: "Polkadot", symbol: "DOT", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/12171/large/polkadot.png" },
+  { id: "matic-network", name: "Polygon", symbol: "MATIC", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png" },
+  { id: "chainlink", name: "Chainlink", symbol: "LINK", category: "Oracle / Infra", image: "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png" },
+
+  // 🚀 MEME COINS
+  { id: "dogecoin", name: "Dogecoin", symbol: "DOGE", category: "Meme Economy", image: "https://assets.coingecko.com/coins/images/5/large/dogecoin.png" },
+  { id: "shiba-inu", name: "Shiba Inu", symbol: "SHIB", category: "Meme Economy", image: "https://assets.coingecko.com/coins/images/11939/large/shiba.png" },
+  { id: "pepe", name: "Pepe", symbol: "PEPE", category: "Meme Economy", image: "https://assets.coingecko.com/coins/images/29850/large/pepe-token.jpeg" },
 ];
 
 export type Timeframe = "SHORT" | "MEDIUM" | "LONG";
@@ -40,6 +43,12 @@ export interface CryptoAnalysisResult {
     val: string;
     signal: string;
     histogram: string;
+  };
+  // 2. TAMBAHKAN Interface BB
+  bb: {
+    upper: number;
+    middle: number;
+    lower: number;
   };
   signal: string;
   sentiment: string;
@@ -69,14 +78,14 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
     if (!marketData) throw new Error("NOT_FOUND");
 
     const currentPrice = marketData.current_price;
-    // const priceChange24h = marketData.price_change_percentage_24h; // Tidak dipakai di logic baru
 
     // --- PROSES CHART (OHLC Data) ---
     const rawData = ohlcRes.data;
 
     // Validasi data chart
-    if (!rawData || rawData.length < 10) {
-      console.warn(`Data chart ${coinId} kurang.`);
+    if (!rawData || rawData.length < 20) {
+      // BB butuh minimal 20 data
+      console.warn(`Data chart ${coinId} kurang untuk analisis.`);
       return null;
     }
 
@@ -112,6 +121,11 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
     const macdValues = MACD.calculate(macdInput);
     const currentMACD = macdValues[macdValues.length - 1] || { MACD: 0, signal: 0, histogram: 0 };
 
+    // 4. BOLLINGER BANDS (BARU)
+    // Periode standar 20, Deviasi standar 2
+    const bbValues = BollingerBands.calculate({ period: 20, values: closePrices, stdDev: 2 });
+    const currentBB = bbValues[bbValues.length - 1] || { upper: 0, middle: 0, lower: 0 };
+
     // ==========================================
     // --- NEW LOGIC: STRICT CONFLUENCE SCORE ---
     // ==========================================
@@ -122,19 +136,28 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
     const smaVal = currentSMA;
 
     // 1. ANALISA RSI (Momentum)
-    // Poin Besar untuk kondisi Ekstrem
-    if (rsiVal < 30) score += 2; // Oversold Parah (Diskon) -> Strong Buy
-    else if (rsiVal < 45) score += 1; // Agak Murah -> Buy
-    else if (rsiVal > 70) score -= 2; // Overbought Parah (Mahal) -> Strong Sell
-    else if (rsiVal > 55) score -= 1; // Agak Mahal -> Sell
+    if (rsiVal < 30) score += 2;
+    else if (rsiVal < 45) score += 1;
+    else if (rsiVal > 70) score -= 2;
+    else if (rsiVal > 55) score -= 1;
 
     // 2. ANALISA MACD (Trend Direction)
-    if (macdHist > 0) score += 1; // Bullish
-    else score -= 1; // Bearish
+    if (macdHist > 0) score += 1;
+    else score -= 1;
 
     // 3. ANALISA SMA (Trend Jangka Panjang)
-    if (currentPrice > smaVal) score += 1; // Uptrend
-    else score -= 1; // Downtrend
+    if (currentPrice > smaVal) score += 1;
+    else score -= 1;
+
+    // 4. ANALISA BOLLINGER BANDS (Volatilitas / Mean Reversion)
+    // Jika harga tembus Lower Band -> Oversold Parah (Potensi Reversal Naik) -> +Score
+    if (currentPrice <= currentBB.lower) {
+      score += 2;
+    }
+    // Jika harga tembus Upper Band -> Overbought Parah (Potensi Reversal Turun) -> -Score
+    else if (currentPrice >= currentBB.upper) {
+      score -= 2;
+    }
 
     // --- KEPUTUSAN FINAL BERDASARKAN SKOR ---
     let signal = "NEUTRAL";
@@ -145,7 +168,7 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
     if (score >= 3) {
       signal = "STRONG BUY";
       sentiment = "Bullish Extreme";
-      color = "text-emerald-400"; // Hijau Neon Terang
+      color = "text-emerald-400";
       borderColor = "border-emerald-500";
     } else if (score >= 1) {
       signal = "BUY";
@@ -155,7 +178,7 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
     } else if (score <= -3) {
       signal = "STRONG SELL";
       sentiment = "Bearish Extreme";
-      color = "text-red-500"; // Merah Terang
+      color = "text-red-500";
       borderColor = "border-red-500";
     } else if (score <= -1) {
       signal = "SELL";
@@ -169,8 +192,6 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
       borderColor = "border-gray-500";
     }
 
-    // Sentiment Score untuk Gauge (0-100)
-    // Kita gunakan RSI sebagai representasi visual sentimen pasar yang paling umum
     const sentimentScore = currentRSI;
 
     const now = new Date();
@@ -191,12 +212,18 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
         signal: currentMACD.signal?.toFixed(2) || "0",
         histogram: currentMACD.histogram?.toFixed(2) || "0",
       },
+      // Kembalikan Data BB
+      bb: {
+        upper: currentBB.upper,
+        middle: currentBB.middle,
+        lower: currentBB.lower,
+      },
       signal,
       sentiment,
       color,
       borderColor,
       lastUpdated: timeString,
-      sentimentScore, // Mengembalikan nilai 0-100
+      sentimentScore,
     };
   } catch (error: any) {
     if (axios.isAxiosError(error)) {

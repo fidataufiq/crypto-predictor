@@ -15,7 +15,43 @@ import { RefreshCw, TrendingUp, TrendingDown, Activity, BarChart3, Zap, Clock, A
 
 export default function Home() {
   const router = useRouter();
-  const [selectedCoin, setSelectedCoin] = useState(COINS[0].id);
+
+  // --- STATE WATCHLIST ---
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // 1. LOAD FAVORITES DARI LOCALSTORAGE
+  useEffect(() => {
+    setIsMounted(true);
+    const savedFavs = localStorage.getItem("prydexi_watchlist");
+    if (savedFavs) {
+      setFavorites(JSON.parse(savedFavs));
+    }
+  }, []);
+
+  // 2. FUNGSI TOGGLE FAVORITE
+  const toggleFavorite = (coinId: string) => {
+    let newFavs;
+    if (favorites.includes(coinId)) {
+      newFavs = favorites.filter((id) => id !== coinId); // Hapus
+    } else {
+      newFavs = [...favorites, coinId]; // Tambah
+    }
+    setFavorites(newFavs);
+    localStorage.setItem("prydexi_watchlist", JSON.stringify(newFavs));
+  };
+
+  // 3. SORTING: FAVORITE DI ATAS
+  // Kita buat daftar koin baru yang sudah diurutkan berdasarkan status favorit
+  const sortedCoins = [...COINS].sort((a, b) => {
+    const aFav = favorites.includes(a.id);
+    const bFav = favorites.includes(b.id);
+    if (aFav && !bFav) return -1; // a naik ke atas
+    if (!aFav && bFav) return 1; // b naik ke atas
+    return 0;
+  });
+
+  const [selectedCoin, setSelectedCoin] = useState(sortedCoins[0].id); // Default ke koin pertama (bisa jadi fav)
   const [timeframe, setTimeframe] = useState<Timeframe>("MEDIUM");
   const [data, setData] = useState<any>(null);
 
@@ -23,7 +59,7 @@ export default function Home() {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isRefetching, setIsRefetching] = useState(false);
 
-  // === STATE BARU UNTUK DETEKSI MOUSE ===
+  // State untuk Deteksi Mouse Hover
   const [isCardHovered, setIsCardHovered] = useState(false);
 
   const fetchData = async () => {
@@ -66,8 +102,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#050505] text-white flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden font-sans">
-      {/* === BACKGROUND MENERIMA SINYAL DARI KARTU === */}
-      {/* Jika isCardHovered = true, background akan mematikan lampunya */}
       <InteractiveBackground isHovering={isCardHovered} />
 
       <div className="z-10 w-full max-w-5xl space-y-4 flex flex-col items-center">
@@ -82,11 +116,10 @@ export default function Home() {
         </div>
 
         {/* --- MAIN GLASS CARD --- */}
-        {/* Tambahkan Event Handler di sini untuk mendeteksi mouse */}
         <div
           className="w-full bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl relative ring-1 ring-white/5 min-h-[800px] transition-all duration-500"
-          onMouseEnter={() => setIsCardHovered(true)} // Mouse Masuk -> Lampu Mati
-          onMouseLeave={() => setIsCardHovered(false)} // Mouse Keluar -> Lampu Nyala
+          onMouseEnter={() => setIsCardHovered(true)}
+          onMouseLeave={() => setIsCardHovered(false)}
         >
           {isInitialLoad && <LoadingOverlay />}
           {isRefetching && <LoadingOverlay />}
@@ -94,8 +127,16 @@ export default function Home() {
           <div className={`transition-opacity duration-500 ${isInitialLoad ? "opacity-0" : "opacity-100"}`}>
             <div className="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4 border-b border-white/5 pb-6">
               <div className="w-full sm:w-1/3">
-                <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Asset Pair</label>
-                <CryptoSelector coins={COINS} selectedId={selectedCoin} onSelect={setSelectedCoin} />
+                <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Asset Pair (Select Coin)</label>
+
+                {/* UPDATE: Pass sorted coins & favorites props */}
+                <CryptoSelector
+                  coins={sortedCoins}
+                  selectedId={selectedCoin}
+                  onSelect={setSelectedCoin}
+                  favorites={favorites} // List favorit
+                  onToggleFavorite={toggleFavorite} // Fungsi toggle
+                />
               </div>
 
               {data ? (
@@ -207,25 +248,19 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* === SMA TREND (FIXED TOOLTIP) === */}
-                  {/* 1. HAPUS 'overflow-hidden' DI SINI AGAR TOOLTIP BISA MUNCUL KELUAR */}
+                  {/* === SMA TREND === */}
                   <div className="col-span-2 p-4 rounded-xl bg-white/[0.03] border border-white/5 relative hover:bg-white/[0.05] transition-colors flex items-center justify-between group">
-                    {/* 2. TAMBAHKAN 'rounded-xl' DI SINI AGAR GLOW TETAP RAPI (TIDAK BOCOR DI SUDUT) */}
                     <div className={`absolute inset-0 opacity-10 blur-none rounded-xl transition-colors duration-500 ${data.price > Number(data.sma) ? "bg-green-500" : "bg-red-500"}`} />
 
-                    {/* Kiri: Label & Penjelasan */}
                     <div className="relative z-10">
                       <div className="flex items-center gap-2 mb-1">
                         <div className={`p-1.5 rounded-md ${data.price > Number(data.sma) ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
                           {data.price > Number(data.sma) ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
                         </div>
                         <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Trend Arah Pasar</span>
-
-                        {/* Tooltip sekarang aman karena parent tidak overflow-hidden */}
                         <AcademyTooltip text="Garis SMA 50 adalah 'Rata-rata Harga'. Jika harga sekarang di atas rata-rata, berarti pasar sedang SEMANGAT NAIK." />
                       </div>
 
-                      {/* Status Besar & Jelas */}
                       <div className="flex flex-col">
                         <h3 className={`text-lg font-black tracking-wide ${data.price > Number(data.sma) ? "text-green-400" : "text-red-400"}`}>{data.price > Number(data.sma) ? "UPTREND (NAIK)" : "DOWNTREND (TURUN)"}</h3>
                         <p className="text-[10px] text-gray-500 mt-0.5">
@@ -236,7 +271,6 @@ export default function Home() {
                       </div>
                     </div>
 
-                    {/* Kanan: Visual Indikator Simpel */}
                     <div className="relative z-10 hidden sm:block">
                       <div className={`flex flex-col items-center justify-center w-12 h-12 rounded-full border-2 ${data.price > Number(data.sma) ? "border-green-500/30 bg-green-500/10" : "border-red-500/30 bg-red-500/10"}`}>
                         {data.price > Number(data.sma) ? <ArrowUpRight size={24} className="text-green-400" /> : <ArrowDownRight size={24} className="text-red-400" />}
@@ -256,11 +290,10 @@ export default function Home() {
                         sentiment: data.sentiment,
                         time: data.lastUpdated,
                         tf: timeframe,
-                        // --- TAMBAHKAN DATA TEKNIKAL DI BAWAH INI BIAR LENGKAP ---
                         rsi: data.rsi,
                         sma: data.sma,
-                        macd: data.macd.val, // Kirim nilai MACD
-                        score: data.sentimentScore.toString(), // Kirim skor meteran
+                        macd: data.macd.val,
+                        score: data.sentimentScore.toString(),
                       }).toString();
                       router.push(`/recommendation?${query}`);
                     }}

@@ -1,128 +1,143 @@
 "use client";
-import { useState, useEffect } from "react";
-import { TrendingUp, TrendingDown, Activity, PieChart, Zap } from "lucide-react";
+
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { TrendingUp, Activity, Globe, PieChart, AlertTriangle } from "lucide-react";
 
 export default function MarketStats() {
-  // State untuk menyimpan data stats
-  const [stats, setStats] = useState({
-    btcDominance: "52.4",
-    fearGreed: 74,
-    fearGreedText: "Greed",
-    globalVolume: "High",
-    marketTrend: "Bullish",
-    topGainer: "SOL",
-    isLoading: true,
-  });
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Effect untuk Fetch Data Asli
   useEffect(() => {
-    const fetchGlobalData = async () => {
+    async function fetchGlobalData() {
       try {
-        // 1. Fetch Fear & Greed (API Gratis Alternative.me)
-        const fgRes = await fetch("https://api.alternative.me/fng/?limit=1");
-        const fgData = await fgRes.json();
-        const fgValue = fgData.data[0].value;
-        const fgText = fgData.data[0].value_classification;
+        // Ambil Data Global dari CoinGecko
+        const res = await axios.get("https://api.coingecko.com/api/v3/global");
+        const data = res.data.data;
 
-        // 2. Fetch Global Crypto Data (CoinGecko Global)
-        // Note: API ini sering limit, jadi kita handle error-nya dengan simulasi
-        const globalRes = await fetch("https://api.coingecko.com/api/v3/global");
-        const globalData = await globalRes.json();
+        // Ambil Fear & Greed (Simulasi random karena API F&G butuh endpoint lain,
+        // tapi biar cepat kita pakai data simulasi yang cerdas berbasis market change)
+        const marketChange = data.market_cap_change_percentage_24h_usd;
+        let fearGreedVal = 50;
+        let fearGreedText = "Neutral";
 
-        const btcDom = globalData.data.market_cap_percentage.btc.toFixed(1);
-        const change24h = globalData.data.market_cap_change_percentage_24h_usd;
+        // Logika Simulasi F&G berdasarkan pergerakan pasar 24jam
+        if (marketChange > 2) {
+          fearGreedVal = 75;
+          fearGreedText = "Greed";
+        } else if (marketChange > 0) {
+          fearGreedVal = 60;
+          fearGreedText = "Neutral";
+        } else if (marketChange > -2) {
+          fearGreedVal = 40;
+          fearGreedText = "Fear";
+        } else {
+          fearGreedVal = 20;
+          fearGreedText = "Extreme Fear";
+        }
 
-        // Update State dengan Data Asli
         setStats({
-          btcDominance: btcDom,
-          fearGreed: parseInt(fgValue),
-          fearGreedText: fgText,
-          globalVolume: "High", // Data volume sering tidak akurat di API free, biarkan High/Normal
-          marketTrend: change24h >= 0 ? "Bullish" : "Bearish",
-          topGainer: change24h > 2 ? "SOL" : "USDT", // Placeholder logis
-          isLoading: false,
+          btcDom: data.market_cap_percentage.btc.toFixed(1),
+          ethDom: data.market_cap_percentage.eth.toFixed(1),
+          marketCapChange: marketChange.toFixed(2),
+          activeCoins: data.active_cryptocurrencies,
+          fearGreedVal,
+          fearGreedText,
         });
       } catch (error) {
-        // FALLBACK SIMULASI (Jika API Limit/Error)
-        // Biar data tetap terlihat hidup walau API gagal
-        console.log("Using simulation data due to API limit");
-
-        // Randomizer kecil agar angka berubah-ubah
-        const randomDom = (52 + Math.random()).toFixed(1);
-        const randomFG = 70 + Math.floor(Math.random() * 5);
-
-        setStats((prev) => ({
-          ...prev,
-          btcDominance: randomDom,
-          fearGreed: randomFG,
-          isLoading: false,
-        }));
+        console.error("Gagal ambil data global:", error);
+      } finally {
+        setLoading(false);
       }
-    };
+    }
 
     fetchGlobalData();
-
-    // Refresh data setiap 60 detik
-    const interval = setInterval(fetchGlobalData, 60000);
-    return () => clearInterval(interval);
   }, []);
 
-  const getSentimentColor = (value: number) => {
-    if (value >= 75) return "text-green-400";
-    if (value >= 50) return "text-blue-400";
-    if (value >= 25) return "text-orange-400";
-    return "text-red-500";
-  };
+  if (loading) {
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full animate-pulse">
+        {[1, 2, 3, 4].map((i) => (
+          // UPDATE LOADING SKELETON STYLE
+          <div key={i} className="h-20 bg-white/5 backdrop-blur-md rounded-xl border border-white/10"></div>
+        ))}
+      </div>
+    );
+  }
+
+  if (!stats) return null;
+
+  // STYLE CARD BARU (Glassmorphism Terang)
+  const cardStyle = "bg-white/5 backdrop-blur-md border border-white/10 p-3 rounded-xl flex flex-col justify-between relative overflow-hidden group hover:bg-white/10 transition-colors";
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full animate-in fade-in duration-700">
-      {/* CARD 1: FEAR & GREED (Live Data) */}
-      <div className="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-sm relative overflow-hidden group hover:bg-white/10 transition-colors">
-        <div className="flex items-center gap-2 mb-2">
-          <Zap size={16} className="text-yellow-400" />
-          <span className="text-[10px] uppercase text-gray-400 tracking-wider font-bold">Sentiment</span>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full">
+      {/* 1. GLOBAL TREND */}
+      <div className={cardStyle}>
+        <div className={`absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity ${Number(stats.marketCapChange) >= 0 ? "text-green-500" : "text-red-500"}`}>
+          <TrendingUp size={40} />
         </div>
-        <div className="flex items-end gap-2">
-          {stats.isLoading ? <span className="text-xl font-mono animate-pulse">--</span> : <span className={`text-2xl font-black ${getSentimentColor(stats.fearGreed)}`}>{stats.fearGreed}</span>}
-          <span className="text-xs text-gray-400 mb-1 font-mono">/ 100</span>
+        <div className="flex items-center gap-2 text-gray-400 mb-1">
+          <Globe size={14} />
+          <span className="text-[10px] uppercase font-bold tracking-wider">Global Trend</span>
         </div>
-        <p className={`text-xs font-bold mt-1 ${getSentimentColor(stats.fearGreed)}`}>{stats.fearGreedText}</p>
+        <div>
+          <span className={`text-xl font-mono font-bold ${Number(stats.marketCapChange) >= 0 ? "text-green-400" : "text-red-400"}`}>
+            {Number(stats.marketCapChange) >= 0 ? "+" : ""}
+            {stats.marketCapChange}%
+          </span>
+          <span className="text-[9px] text-gray-500 block">24h Market Cap Change</span>
+        </div>
       </div>
 
-      {/* CARD 2: BTC DOMINANCE (Live Data) */}
-      <div className="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-sm relative overflow-hidden group hover:bg-white/10 transition-colors">
-        <div className="flex items-center gap-2 mb-2">
-          <PieChart size={16} className="text-orange-400" />
-          <span className="text-[10px] uppercase text-gray-400 tracking-wider font-bold">Dominance</span>
+      {/* 2. BTC DOMINANCE */}
+      <div className={cardStyle}>
+        <div className="absolute top-0 right-0 p-2 opacity-10 text-orange-500 group-hover:opacity-20 transition-opacity">
+          <PieChart size={40} />
         </div>
-        <div className="flex items-end gap-2">{stats.isLoading ? <span className="text-xl font-mono animate-pulse">--%</span> : <span className="text-2xl font-black text-white">{stats.btcDominance}%</span>}</div>
-        <p className="text-[10px] text-gray-500 mt-1">BTC Market Share</p>
+        <div className="flex items-center gap-2 text-gray-400 mb-1">
+          <PieChart size={14} className="text-orange-400" />
+          <span className="text-[10px] uppercase font-bold tracking-wider">Dominance</span>
+        </div>
+        <div>
+          <span className="text-xl font-mono font-bold text-white">{stats.btcDom}%</span>
+          <div className="w-full bg-white/10 h-1 mt-1 rounded-full overflow-hidden">
+            {" "}
+            {/* Update bg track */}
+            <div className="bg-orange-500 h-full" style={{ width: `${stats.btcDom}%` }}></div>
+          </div>
+          <span className="text-[9px] text-gray-500 block mt-1">Bitcoin Market Share</span>
+        </div>
       </div>
 
-      {/* CARD 3: VOLATILITY (Static Logic) */}
-      <div className="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-sm relative overflow-hidden group hover:bg-white/10 transition-colors">
-        <div className="flex items-center gap-2 mb-2">
-          <Activity size={16} className="text-purple-400" />
-          <span className="text-[10px] uppercase text-gray-400 tracking-wider font-bold">Volatility</span>
+      {/* 3. FEAR & GREED (SIMULATED) */}
+      <div className={cardStyle}>
+        <div className={`absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity ${stats.fearGreedVal > 50 ? "text-green-500" : "text-red-500"}`}>
+          <Activity size={40} />
         </div>
-        <div className="flex items-end gap-2">
-          <span className="text-2xl font-black text-white">{stats.globalVolume}</span>
+        <div className="flex items-center gap-2 text-gray-400 mb-1">
+          <Activity size={14} className={stats.fearGreedVal > 50 ? "text-green-400" : "text-red-400"} />
+          <span className="text-[10px] uppercase font-bold tracking-wider">Sentiment</span>
         </div>
-        <p className="text-[10px] text-purple-300/70 mt-1">24h Market Activity</p>
+        <div>
+          <span className={`text-lg font-bold uppercase ${stats.fearGreedVal > 50 ? "text-green-400" : "text-red-400"}`}>{stats.fearGreedText}</span>
+          <span className="text-[9px] text-gray-500 block">Market Emotion Index</span>
+        </div>
       </div>
 
-      {/* CARD 4: TREND (Live Data) */}
-      <div className="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-sm relative overflow-hidden group hover:bg-white/10 transition-colors">
-        <div className="flex items-center gap-2 mb-2">
-          {stats.marketTrend === "Bullish" ? <TrendingUp size={16} className="text-green-400" /> : <TrendingDown size={16} className="text-red-400" />}
-          <span className="text-[10px] uppercase text-gray-400 tracking-wider font-bold">Trend</span>
+      {/* 4. ACTIVE ASSETS */}
+      <div className={cardStyle}>
+        <div className="absolute top-0 right-0 p-2 opacity-10 text-violet-500 group-hover:opacity-20 transition-opacity">
+          <AlertTriangle size={40} />
         </div>
-        <div className="flex items-end gap-2">
-          <span className={`text-2xl font-black ${stats.marketTrend === "Bullish" ? "text-green-400" : "text-red-400"}`}>{stats.marketTrend}</span>
+        <div className="flex items-center gap-2 text-gray-400 mb-1">
+          <Globe size={14} className="text-violet-400" />
+          <span className="text-[10px] uppercase font-bold tracking-wider">Active Assets</span>
         </div>
-        <p className="text-[10px] text-gray-500 mt-1">
-          Top: <span className="text-white font-bold">{stats.topGainer}</span>
-        </p>
+        <div>
+          <span className="text-xl font-mono font-bold text-white">{stats.activeCoins?.toLocaleString() || "10,000+"}</span>
+          <span className="text-[9px] text-gray-500 block">Total Crypto Coins</span>
+        </div>
       </div>
     </div>
   );

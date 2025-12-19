@@ -1,90 +1,96 @@
 "use client";
 
 import { useState } from "react";
-import { BookOpen, X, Activity, BarChart3, Target, Cpu, Globe, TrendingUp } from "lucide-react";
+import { BookOpen, X, Activity, BarChart3, Target, Cpu, Globe, TrendingUp, Layers, Zap } from "lucide-react";
 
 export default function SystemManual() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("workflow");
+  const [activeTab, setActiveTab] = useState("logic"); // Default ke Logic biar langsung paham
 
   // Konten Manual
   const content = {
-    workflow: {
-      title: "System Workflow",
-      icon: <Globe size={18} />,
+    logic: {
+      title: "AI Logic Core",
+      icon: <Cpu size={18} />,
       text: (
-        <div className="space-y-4 text-sm text-gray-400">
+        <div className="space-y-5 text-sm text-gray-400">
           <p>
-            <strong className="text-white">Cara Kerja Algoritma:</strong> Sistem ini menggabungkan data makro global (Dashboard) dengan data teknikal spesifik aset (Chart Analysis).
+            <strong className="text-white">Bagaimana Keputusan Dibuat?</strong>
+            <br />
+            Sistem ini tidak menebak. Ia menggunakan metode <span className="text-violet-400 font-bold">"Strict Confluence Scoring"</span>. Setiap indikator memberikan poin untuk menghasilkan skor akhir (-4 hingga +4).
           </p>
-          <ul className="list-disc pl-4 space-y-2">
-            <li>
-              <strong className="text-violet-400">Langkah 1:</strong> Pilih Aset (Koin) dan Timeframe (Short/Medium/Long).
-            </li>
-            <li>
-              <strong className="text-violet-400">Langkah 2:</strong> AI akan memindai indikator teknikal (RSI, MACD, SMA) secara real-time.
-            </li>
-            <li>
-              <strong className="text-violet-400">Langkah 3:</strong> Sistem menghasilkan "Trading Plan" berisi level Entry, Stop Loss, dan Target Profit berdasarkan volatilitas aset tersebut.
-            </li>
-          </ul>
-        </div>
-      ),
-    },
-    macro: {
-      title: "Macro Dashboard",
-      icon: <Activity size={18} />,
-      text: (
-        <div className="space-y-4 text-sm text-gray-400">
-          <p>Data di halaman depan adalah "Cuaca Pasar Global". Inilah cara membacanya:</p>
-          <div className="grid gap-3">
-            <div className="bg-white/5 p-3 rounded-lg border border-white/5">
-              <strong className="text-yellow-400 block mb-1">Sentiment (Fear & Greed)</strong>
-              Mengukur emosi massa. Saat "Extreme Fear", biasanya harga murah (diskon). Saat "Extreme Greed", pasar rawan koreksi (turun).
+
+          <div className="bg-white/5 p-4 rounded-xl border border-white/5 space-y-3">
+            <h4 className="text-white font-bold text-xs uppercase tracking-widest border-b border-white/10 pb-2">Contoh Perhitungan Skor:</h4>
+            <div className="flex justify-between items-center text-xs">
+              <span>RSI Oversold {"(<30)"}</span>
+              <span className="text-green-400 font-mono font-bold">+2 Poin</span>
             </div>
-            <div className="bg-white/5 p-3 rounded-lg border border-white/5">
-              <strong className="text-orange-400 block mb-1">BTC Dominance</strong>
-              Persentase uang yang ada di Bitcoin dibanding Altcoin. Dominance tinggi = Altcoin cenderung lesu.
+            <div className="flex justify-between items-center text-xs">
+              <span>Harga Tembus Bawah Bollinger</span>
+              <span className="text-green-400 font-mono font-bold">+2 Poin</span>
             </div>
-            <div className="bg-white/5 p-3 rounded-lg border border-white/5">
-              <strong className="text-green-400 block mb-1">Market Trend</strong>
-              Arah pergerakan mayoritas aset dalam 24 jam terakhir (Bullish/Bearish).
+            <div className="flex justify-between items-center text-xs">
+              <span>Trend SMA Bullish</span>
+              <span className="text-green-400 font-mono font-bold">+1 Poin</span>
+            </div>
+            <div className="border-t border-white/10 pt-2 flex justify-between items-center">
+              <strong className="text-white">TOTAL SKOR</strong>
+              <strong className="text-violet-400 font-mono text-lg">+5 (STRONG BUY)</strong>
             </div>
           </div>
+
+          <p>
+            <strong className="text-white">Dampaknya:</strong> Sinyal hanya muncul jika <em className="text-gray-300">beberapa indikator setuju sekaligus</em> (Confluence). Jika indikator saling bertentangan, skor akan mendekati 0
+            (Netral/Hold). Ini meminimalisir sinyal palsu.
+          </p>
         </div>
       ),
     },
     indicators: {
-      title: "Technical Core",
+      title: "Technical Indicators",
       icon: <BarChart3 size={18} />,
       text: (
         <div className="space-y-4 text-sm text-gray-400">
-          <p>Mengapa indikator setiap koin berbeda? Karena likuiditas dan komunitas setiap koin membentuk pola psikologi yang unik.</p>
-          <ul className="space-y-3">
-            <li className="border-l-2 border-violet-500 pl-3">
-              <strong className="text-white block">RSI (Relative Strength Index)</strong>
-              Mengukur kecepatan perubahan harga. <br />
-              <span className="text-xs text-gray-500">
-                Logika: Jika {">"} 70 (Overbought), harga kemahalan. Jika {"<"} 30 (Oversold), harga murah.
+          <p>Sistem memantau 4 pilar utama data teknikal:</p>
+          <ul className="space-y-4">
+            <li className="bg-white/[0.03] p-3 rounded-lg border-l-2 border-violet-500">
+              <strong className="text-white flex items-center gap-2">
+                <Activity size={14} /> RSI (Momentum)
+              </strong>
+              <span className="text-xs text-gray-500 block mt-1">
+                Mengukur kecepatan harga. <br />• {">"} 70 = Overbought (Mahal/Rawan Turun). <br />• {"<"} 30 = Oversold (Murah/Diskon).
               </span>
             </li>
-            <li className="border-l-2 border-fuchsia-500 pl-3">
-              <strong className="text-white block">MACD (Momentum)</strong>
-              Mendeteksi perubahan momentum/kekuatan tren. <br />
-              <span className="text-xs text-gray-500">Logika: Jika garis Value memotong ke atas garis Signal, itu sinyal awal Bullish (Naik).</span>
+
+            {/* INDIKATOR BARU: BOLLINGER BANDS */}
+            <li className="bg-white/[0.03] p-3 rounded-lg border-l-2 border-blue-500">
+              <strong className="text-white flex items-center gap-2">
+                <Layers size={14} /> Bollinger Bands (Volatility)
+              </strong>
+              <span className="text-xs text-gray-500 block mt-1">
+                Mengukur "kewajaran" harga dan volatilitas. <br />
+                • Harga kena Pita Atas = Mahal. <br />
+                • Harga kena Pita Bawah = Murah. <br />
+              </span>
             </li>
 
-            {/* --- TAMBAHAN PENJELASAN SMA --- */}
-            <li className="border-l-2 border-yellow-500 pl-3">
-              <strong className="text-white block">SMA Trend (Simple Moving Average)</strong>
-              Garis rata-rata harga untuk melihat arah tren utama. <br />
-              <span className="text-xs text-gray-500">Logika: Jika Harga saat ini DI ATAS garis SMA, tren sedang NAIK (Uptrend). Jika DI BAWAH, tren sedang TURUN (Downtrend).</span>
+            {/* INDIKATOR BARU: SMA */}
+            <li className="bg-white/[0.03] p-3 rounded-lg border-l-2 border-yellow-500">
+              <strong className="text-white flex items-center gap-2">
+                <TrendingUp size={14} /> SMA 50 (Trend Filter)
+              </strong>
+              <span className="text-xs text-gray-500 block mt-1">
+                Garis rata-rata 50 candle terakhir. <br />
+                • Harga di ATAS garis = Uptrend (Aman untuk Buy). <br />• Harga di BAWAH garis = Downtrend (Hati-hati).
+              </span>
             </li>
-            {/* ------------------------------- */}
 
-            <li className="border-l-2 border-blue-500 pl-3">
-              <strong className="text-white block">Market Psychology Gauge</strong>
-              Skor khusus yang dihitung AI berdasarkan gabungan RSI + Volatilitas untuk menentukan apakah koin ini sedang "Panik" atau "FOMO".
+            <li className="bg-white/[0.03] p-3 rounded-lg border-l-2 border-fuchsia-500">
+              <strong className="text-white flex items-center gap-2">
+                <BarChart3 size={14} /> MACD (Confirmation)
+              </strong>
+              <span className="text-xs text-gray-500 block mt-1">Validasi kekuatan tren. Histogram hijau berarti pembeli sedang mendominasi.</span>
             </li>
           </ul>
         </div>
@@ -95,25 +101,37 @@ export default function SystemManual() {
       icon: <Target size={18} />,
       text: (
         <div className="space-y-4 text-sm text-gray-400">
-          <p>Trading Plan disusun dengan Manajemen Risiko yang ketat:</p>
           <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2 bg-red-500/10 p-2 rounded border border-red-500/20">
-              <strong className="text-red-400 text-xs uppercase">Stop Loss (SL)</strong>
-              <p className="text-xs">Titik keluar otomatis jika prediksi salah, untuk membatasi kerugian (Proteksi Modal).</p>
+            <div className="bg-red-500/10 p-2 rounded border border-red-500/20 col-span-2">
+              <strong className="text-red-400 text-xs uppercase">1. Stop Loss (Proteksi)</strong>
+              <p className="text-xs mt-1">Jaring pengaman wajib. Jika harga menyentuh level ini, sistem menyarankan keluar untuk mencegah kerugian lebih dalam.</p>
             </div>
             <div className="bg-green-500/10 p-2 rounded border border-green-500/20">
-              <strong className="text-green-400 text-xs uppercase">Target Safe</strong>
-              <p className="text-xs">Titik ambil profit sebagian untuk mengamankan cuan.</p>
+              <strong className="text-green-400 text-xs uppercase">2. Take Profit</strong>
+              <p className="text-xs mt-1">Level harga optimal untuk mengambil keuntungan secara bertahap.</p>
             </div>
             <div className="bg-violet-500/10 p-2 rounded border border-violet-500/20">
-              <strong className="text-violet-400 text-xs uppercase">Moonbag</strong>
-              <p className="text-xs">Menyisakan sedikit koin (5-10%) untuk target harga tertinggi (To The Moon).</p>
-            </div>
-            <div className="col-span-2 bg-white/5 p-2 rounded border border-white/10">
-              <strong className="text-white text-xs uppercase">AI Confidence & Insight</strong>
-              <p className="text-xs">Keyakinan AI (0-100%) berdasarkan seberapa banyak indikator yang "setuju" dengan sinyal tersebut.</p>
+              <strong className="text-violet-400 text-xs uppercase">3. Execute On</strong>
+              <p className="text-xs mt-1">Jembatan langsung ke Bursa (Exchange). Analisis tanpa aksi adalah sia-sia. Tombol ini mempercepat Anda membuka posisi di broker terpercaya (OKX, Bybit, dll) sebelum momentum hilang.</p>
             </div>
           </div>
+        </div>
+      ),
+    },
+    macro: {
+      title: "Global Dashboard",
+      icon: <Globe size={18} />,
+      text: (
+        <div className="space-y-4 text-sm text-gray-400">
+          <p>Halaman depan adalah ringkasan cuaca ekonomi kripto:</p>
+          <ul className="list-disc pl-4 space-y-2 marker:text-gray-600">
+            <li>
+              <strong className="text-white">Fear & Greed Index:</strong> Psikologi massa. Beli saat orang takut (Fear), jual saat orang serakah (Greed).
+            </li>
+            <li>
+              <strong className="text-white">BTC Dominance:</strong> Jika Dominance turun, biasanya uang mengalir ke Altcoins (Altseason).
+            </li>
+          </ul>
         </div>
       ),
     },
@@ -136,7 +154,7 @@ export default function SystemManual() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity" onClick={() => setIsOpen(false)}></div>
 
-          <div className="bg-[#0a0a0a] border border-white/10 w-full max-w-2xl rounded-3xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[80vh] animate-in fade-in zoom-in duration-300">
+          <div className="bg-[#0a0a0a] border border-white/10 w-full max-w-2xl rounded-3xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in duration-300">
             {/* Header */}
             <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
               <div className="flex items-center gap-3">
@@ -144,8 +162,8 @@ export default function SystemManual() {
                   <Cpu size={20} />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-white tracking-wide">SYSTEM MANUAL</h2>
-                  <p className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">Operations & Logic Guide</p>
+                  <h2 className="text-xl font-bold text-white tracking-wide">SYSTEM ARCHITECT</h2>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">Manual & Logic Guide v1.5</p>
                 </div>
               </div>
               <button onClick={() => setIsOpen(false)} className="text-gray-500 hover:text-white transition-colors" aria-label="Close Manual">
@@ -155,6 +173,7 @@ export default function SystemManual() {
 
             {/* Body */}
             <div className="flex flex-col md:flex-row h-full overflow-hidden">
+              {/* Sidebar Menu */}
               <div className="w-full md:w-1/3 bg-black/20 border-r border-white/5 p-2 overflow-y-auto">
                 {Object.keys(content).map((key) => (
                   <button
@@ -168,8 +187,9 @@ export default function SystemManual() {
                 ))}
               </div>
 
-              <div className="w-full md:w-2/3 p-6 md:p-8 overflow-y-auto bg-gradient-to-br from-[#0a0a0a] to-[#111]">
-                <h3 className="text-2xl font-black text-white mb-6 flex items-center gap-2">
+              {/* Main Content Area */}
+              <div className="w-full md:w-2/3 p-6 md:p-8 overflow-y-auto bg-gradient-to-br from-[#0a0a0a] to-[#111] custom-scrollbar">
+                <h3 className="text-2xl font-black text-white mb-6 flex items-center gap-2 border-b border-white/10 pb-4">
                   {content[activeTab as keyof typeof content].icon}
                   {content[activeTab as keyof typeof content].title}
                 </h3>
@@ -179,7 +199,7 @@ export default function SystemManual() {
 
             {/* Footer */}
             <div className="p-4 bg-black/40 border-t border-white/5 text-center">
-              <p className="text-[9px] text-gray-600 font-mono">READ-ONLY ACCESS • ENCRYPTED PROTOCOL</p>
+              <p className="text-[9px] text-gray-600 font-mono">PRYDEXI AI SYSTEM • ENCRYPTED PROTOCOL</p>
             </div>
           </div>
         </div>

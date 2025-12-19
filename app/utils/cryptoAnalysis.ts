@@ -2,33 +2,49 @@ import axios from "axios";
 // 1. IMPORT BOLLINGER BANDS dari library
 import { RSI, SMA, MACD, BollingerBands } from "technicalindicators";
 
-// --- DAFTAR KOIN LENGKAP ---
+// --- DAFTAR KOIN LENGKAP (UPDATED) ---
 export const COINS = [
   // 💎 MAJOR ASSETS (Blue Chips)
   { id: "bitcoin", name: "Bitcoin", symbol: "BTC", category: "Major Assets", image: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png" },
   { id: "ethereum", name: "Ethereum", symbol: "ETH", category: "Major Assets", image: "https://assets.coingecko.com/coins/images/279/large/ethereum.png" },
   { id: "solana", name: "Solana", symbol: "SOL", category: "Major Assets", image: "https://assets.coingecko.com/coins/images/4128/large/solana.png" },
   { id: "binancecoin", name: "BNB", symbol: "BNB", category: "Major Assets", image: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png" },
+  { id: "the-open-network", name: "Toncoin", symbol: "TON", category: "Major Assets", image: "https://assets.coingecko.com/coins/images/17980/large/ton_symbol.png" }, // BARU: Telegram Ecosystem
 
   // 🔥 NEW & TRENDING
   { id: "hyperliquid", name: "Hyperliquid", symbol: "HYPE", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/35534/large/hyperliquid.png" },
-  { id: "aster-2", name: "Aster", symbol: "ASTER", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/12504/large/uniswap-uni.png" },
-  { id: "astar", name: "Astar", symbol: "ASTR", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/22617/large/astar.png" },
   { id: "sui", name: "Sui", symbol: "SUI", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/26375/large/sui_asset.jpeg" },
-  { id: "render-token", name: "Render", symbol: "RNDR", category: "AI & DePIN", image: "https://assets.coingecko.com/coins/images/11636/large/rndr.png" },
+  { id: "sei-network", name: "Sei", symbol: "SEI", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/28205/large/Sei_Logo_Full_Gradient.png" }, // BARU: Parallel EVM
+  { id: "celestia", name: "Celestia", symbol: "TIA", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/31967/large/tia.png" }, // BARU: Modular Blockchain
+  { id: "kaspa", name: "Kaspa", symbol: "KAS", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/25751/large/kaspa.png" }, // BARU: PoW Speed
 
-  // 🏗️ INFRASTRUCTURE & LAYER 1
+  // 🤖 AI & DePIN (Sektor Panas)
+  { id: "render-token", name: "Render", symbol: "RNDR", category: "AI & DePIN", image: "https://assets.coingecko.com/coins/images/11636/large/rndr.png" },
+  { id: "fetch-ai", name: "Artificial Alliance", symbol: "FET", category: "AI & DePIN", image: "https://assets.coingecko.com/coins/images/5624/large/fet.png" }, // BARU: AI Agent Leader
+  { id: "near", name: "NEAR Protocol", symbol: "NEAR", category: "AI & DePIN", image: "https://assets.coingecko.com/coins/images/10365/large/near.png" }, // BARU: AI Pivot
+  { id: "internet-computer", name: "ICP", symbol: "ICP", category: "AI & DePIN", image: "https://assets.coingecko.com/coins/images/14495/large/Internet_Computer_logo.png" }, // BARU: Cloud Compute
+
+  // 🏦 RWA & DEFI (Real World Assets)
+  { id: "ondo-finance", name: "Ondo", symbol: "ONDO", category: "RWA & DeFi", image: "https://assets.coingecko.com/coins/images/27525/large/ondo.png" }, // BARU: RWA Leader
+  { id: "injective-protocol", name: "Injective", symbol: "INJ", category: "RWA & DeFi", image: "https://assets.coingecko.com/coins/images/12882/large/secondary_symbol.png" }, // BARU: Finance L1
+  { id: "chainlink", name: "Chainlink", symbol: "LINK", category: "Oracle / Infra", image: "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png" },
+  { id: "uniswap", name: "Uniswap", symbol: "UNI", category: "RWA & DeFi", image: "https://assets.coingecko.com/coins/images/12504/large/uniswap-uni.png" }, // BARU: DEX King
+
+  // 🏗️ INFRASTRUCTURE & LAYER 2
   { id: "ripple", name: "XRP", symbol: "XRP", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png" },
   { id: "cardano", name: "Cardano", symbol: "ADA", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/975/large/cardano.png" },
   { id: "avalanche-2", name: "Avalanche", symbol: "AVAX", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png" },
   { id: "polkadot", name: "Polkadot", symbol: "DOT", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/12171/large/polkadot.png" },
-  { id: "matic-network", name: "Polygon", symbol: "MATIC", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png" },
-  { id: "chainlink", name: "Chainlink", symbol: "LINK", category: "Oracle / Infra", image: "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png" },
+  { id: "matic-network", name: "Polygon", symbol: "POL", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png" },
+  { id: "arbitrum", name: "Arbitrum", symbol: "ARB", category: "Layer 2", image: "https://assets.coingecko.com/coins/images/16547/large/arbitrum.png" }, // BARU: L2 Leader
+  { id: "optimism", name: "Optimism", symbol: "OP", category: "Layer 2", image: "https://assets.coingecko.com/coins/images/25244/large/Optimism.png" }, // BARU: Superchain
 
   // 🚀 MEME COINS
   { id: "dogecoin", name: "Dogecoin", symbol: "DOGE", category: "Meme Economy", image: "https://assets.coingecko.com/coins/images/5/large/dogecoin.png" },
   { id: "shiba-inu", name: "Shiba Inu", symbol: "SHIB", category: "Meme Economy", image: "https://assets.coingecko.com/coins/images/11939/large/shiba.png" },
   { id: "pepe", name: "Pepe", symbol: "PEPE", category: "Meme Economy", image: "https://assets.coingecko.com/coins/images/29850/large/pepe-token.jpeg" },
+  { id: "dogwifcoin", name: "dogwifhat", symbol: "WIF", category: "Meme Economy", image: "https://assets.coingecko.com/coins/images/33566/large/dogwifhat.jpg" }, // BARU: Solana Meme King
+  { id: "bonk", name: "Bonk", symbol: "BONK", category: "Meme Economy", image: "https://assets.coingecko.com/coins/images/28600/large/bonk.jpg" }, // BARU: Solana Meme
 ];
 
 export type Timeframe = "SHORT" | "MEDIUM" | "LONG";

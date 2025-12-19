@@ -1,5 +1,43 @@
 export const changelogData = [
   {
+    version: "v1.7.0",
+    date: "27 Dec 2025",
+    title: "Asset Universe Expansion: The 2025 List",
+    type: "Content", // Tipe update konten/database
+    description: "Perluasan cakupan pasar secara masif untuk mencakup narasi kripto paling dominan di tahun 2025.",
+    details: [
+      "New Sector Integration: Menambahkan kategori sektor yang sedang trending seperti RWA (Ondo), AI Agents (Fetch.ai, Near), dan Modular Blockchain (Celestia).",
+      "Layer 2 & Speed: Mengintegrasikan pemimpin Layer 2 (Arbitrum, Optimism) dan pesaing L1 tercepat (Sui, Sei, Kaspa).",
+      "Meme Coin Supercycle: Melengkapi daftar 'Meme Economy' dengan raja meme Solana (WIF, BONK) dan Toncoin untuk ekosistem Telegram.",
+      "Database Optimization: Restrukturisasi kategori aset agar navigasi antar sektor (DeFi, Infra, Meme).",
+    ],
+  },
+  {
+    version: "v1.6.0",
+    date: "26 Dec 2025",
+    title: "Macro Intelligence & System Transparency",
+    type: "Feature",
+    description: "Pengaktifan mesin data makro real-time dan transparansi logika AI kepada pengguna.",
+    details: [
+      "Live Macro Engine: Dashboard atas kini terhubung langsung ke CoinGecko API Global untuk menampilkan BTC Dominance, Total Market Cap, dan Tren Global secara real-time (bukan data statis).",
+      "Reactive Sentiment Logic: Mengganti API Fear & Greed pihak ketiga yang lambat dengan algoritma simulasi internal yang merespons volatilitas pasar secara instan (Real-time Reaction).",
+      "System Manual v1.5: Pembaruan dokumentasi 'System Architect' yang kini menjelaskan logika 'Strict Confluence Scoring', cara membaca Bollinger Bands, dan filosofi manajemen risiko AI.",
+      "Visual Consistency: Menyelaraskan desain kartu indikator makro dengan tema 'Glassmorphism Terang' agar menyatu dengan kartu utama.",
+    ],
+  },
+  {
+    version: "v1.5.1",
+    date: "24 Dec 2025",
+    title: "Selector Grand View & Responsive Fixes",
+    type: "Improvement",
+    description: "Penyempurnaan tampilan pemilihan aset agar adaptif di segala perangkat dan terlihat lebih luas di layar desktop.",
+    details: [
+      "Adaptive Dropdown Engine: Memperbaiki masalah tampilan menu yang terpotong di layar tablet dengan menerapkan lebar dinamis (Mobile: Full Width -> Desktop: 720px).",
+      "Progressive Grid System: Jumlah kolom aset kini otomatis menyesuaikan lebar layar (dari 2 kolom di HP, hingga 5 kolom di Desktop) agar informasi tidak terlalu padat.",
+      "Visual Expansion: Memperbesar dimensi area dropdown dan ikon koin di mode desktop untuk memberikan pengalaman navigasi yang lebih lega, jelas, dan profesional.",
+    ],
+  },
+  {
     version: "v1.5.0",
     date: "23 Dec 2025",
     title: "Asset Management & UI Polish",

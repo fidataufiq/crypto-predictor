@@ -42,16 +42,15 @@ export default function Home() {
   };
 
   // 3. SORTING: FAVORITE DI ATAS
-  // Kita buat daftar koin baru yang sudah diurutkan berdasarkan status favorit
   const sortedCoins = [...COINS].sort((a, b) => {
     const aFav = favorites.includes(a.id);
     const bFav = favorites.includes(b.id);
-    if (aFav && !bFav) return -1; // a naik ke atas
-    if (!aFav && bFav) return 1; // b naik ke atas
+    if (aFav && !bFav) return -1;
+    if (!aFav && bFav) return 1;
     return 0;
   });
 
-  const [selectedCoin, setSelectedCoin] = useState(sortedCoins[0].id); // Default ke koin pertama (bisa jadi fav)
+  const [selectedCoin, setSelectedCoin] = useState(sortedCoins[0].id);
   const [timeframe, setTimeframe] = useState<Timeframe>("MEDIUM");
   const [data, setData] = useState<any>(null);
 
@@ -129,14 +128,7 @@ export default function Home() {
               <div className="w-full sm:w-1/3">
                 <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Asset Pair (Select Coin)</label>
 
-                {/* UPDATE: Pass sorted coins & favorites props */}
-                <CryptoSelector
-                  coins={sortedCoins}
-                  selectedId={selectedCoin}
-                  onSelect={setSelectedCoin}
-                  favorites={favorites} // List favorit
-                  onToggleFavorite={toggleFavorite} // Fungsi toggle
-                />
+                <CryptoSelector coins={sortedCoins} selectedId={selectedCoin} onSelect={setSelectedCoin} favorites={favorites} onToggleFavorite={toggleFavorite} />
               </div>
 
               {data ? (
@@ -164,6 +156,7 @@ export default function Home() {
 
             {data ? (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* KOLOM KIRI: Chart + Banner Sinyal (Lebih Luas) */}
                 <div className="lg:col-span-2 space-y-4">
                   <div className="flex items-center justify-between bg-black/20 p-1.5 rounded-xl border border-white/5">
                     <div className="flex items-center gap-2 pl-2">
@@ -206,12 +199,14 @@ export default function Home() {
                   </div>
                 </div>
 
+                {/* KOLOM KANAN: Sidebar Metrics (Psychology, RSI, MACD, BB, SMA) */}
                 <div className="lg:col-span-1 grid grid-cols-2 gap-3 content-start">
+                  {/* 1. Market Psychology (Tetap 2 Col) */}
                   <div className="col-span-2 p-4 rounded-xl bg-white/[0.03] border border-white/5 flex flex-col items-center justify-between min-h-[190px] hover:border-violet-500/20 transition-colors">
                     <div className="flex items-center gap-2 w-full justify-center pt-1">
                       <Zap size={14} className="text-violet-400" />
                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Market Psychology</span>
-                      <AcademyTooltip text="Merah (Fear) = Waktunya Beli. Hijau (Greed) = Hati-hati Jual." />
+                      <AcademyTooltip text="Area Merah (Fear) seringkali menjadi peluang Beli terbaik. Area Hijau (Greed) sinyal bahaya koreksi." />
                     </div>
                     <div className="flex-1 w-full flex items-center justify-center py-2">
                       <SentimentGauge score={data.sentimentScore} />
@@ -222,6 +217,7 @@ export default function Home() {
                     </div>
                   </div>
 
+                  {/* 2. RSI (1 Col) */}
                   <div className="col-span-1 p-3 rounded-xl bg-white/[0.03] border border-white/5 relative hover:bg-white/[0.05] transition-colors">
                     <div className="flex items-center gap-1 mb-1 text-gray-400">
                       <Activity size={12} />
@@ -232,11 +228,12 @@ export default function Home() {
                     <p className="text-[9px] text-gray-600">Relative Strength</p>
                   </div>
 
+                  {/* 3. MACD (1 Col) */}
                   <div className="col-span-1 p-3 rounded-xl bg-white/[0.03] border border-white/5 relative hover:bg-white/[0.05] transition-colors">
                     <div className="flex items-center gap-1 mb-1 text-gray-400">
                       <BarChart3 size={12} />
                       <span className="text-[10px] font-bold uppercase">MACD</span>
-                      <AcademyTooltip text="Jika Value > Signal, artinya Momentum Bullish (Naik)." />
+                      <AcademyTooltip text="Jika Value > Signal, tren Naik sedang kuat. Jika sebaliknya, tren Turun mendominasi." />
                     </div>
                     <div className="flex flex-col">
                       <p className={`text-sm font-mono ${Number(data.macd.val) > Number(data.macd.signal) ? "text-green-400" : "text-red-400"}`}>
@@ -248,7 +245,58 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* === SMA TREND === */}
+                  {/* 4. BOLLINGER BANDS (FIXED TOOLTIP) */}
+                  {/* HAPUS 'overflow-hidden' di parent utama agar tooltip bisa keluar */}
+                  <div className="col-span-2 p-3 rounded-xl bg-white/[0.03] border border-white/5 relative hover:bg-white/[0.05] transition-colors group">
+                    {/* CONTAINER KHUSUS GLOW (Ini yang di-overflow-hidden) */}
+                    <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none">
+                      <div
+                        className={`absolute -right-4 -top-4 w-12 h-12 blur-xl rounded-full opacity-20 transition-colors duration-500 ${
+                          data.price <= data.bb.lower ? "bg-green-500" : data.price >= data.bb.upper ? "bg-red-500" : "bg-blue-500"
+                        }`}
+                      />
+                    </div>
+
+                    {/* KONTEN UTAMA (Relative z-10 agar di atas glow) */}
+                    <div className="relative z-10">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-1 text-gray-400">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M2 12h5l2 5 4-10 4 10 2-5h3" />
+                          </svg>
+                          <span className="text-[10px] font-bold uppercase tracking-widest">Volatility</span>
+
+                          {/* Tooltip aman sekarang */}
+                          <AcademyTooltip text="Bar ini adalah rentang harga. Ujung Kiri (L) = Pita Bawah (Murah/Support). Ujung Kanan (U) = Pita Atas (Mahal/Resistance)." />
+                        </div>
+
+                        <span
+                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${
+                            data.price <= data.bb.lower
+                              ? "bg-green-500/10 text-green-400 border-green-500/20"
+                              : data.price >= data.bb.upper
+                              ? "bg-red-500/10 text-red-400 border-red-500/20"
+                              : "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                          }`}
+                        >
+                          {data.price <= data.bb.lower ? "OVERSOLD" : data.price >= data.bb.upper ? "OVERBOUGHT" : "NORMAL"}
+                        </span>
+                      </div>
+
+                      <div className="relative h-1.5 w-full bg-gray-800 rounded-full flex items-center mt-1 mb-1">
+                        <div className="absolute left-0 w-0.5 h-2 bg-green-500/50 rounded-full"></div>
+                        <div className="absolute right-0 w-0.5 h-2 bg-red-500/50 rounded-full"></div>
+                        <div
+                          className={`absolute w-2 h-2 rounded-full border border-[#050505] shadow-[0_0_5px_currentColor] transition-all duration-1000 ${
+                            data.price <= data.bb.lower ? "bg-green-400" : data.price >= data.bb.upper ? "bg-red-400" : "bg-blue-400"
+                          }`}
+                          style={{ left: data.price <= data.bb.lower ? "0%" : data.price >= data.bb.upper ? "97%" : `${Math.min(97, Math.max(0, ((data.price - data.bb.lower) / (data.bb.upper - data.bb.lower)) * 100))}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 5. SMA TREND (2 Col) */}
                   <div className="col-span-2 p-4 rounded-xl bg-white/[0.03] border border-white/5 relative hover:bg-white/[0.05] transition-colors flex items-center justify-between group">
                     <div className={`absolute inset-0 opacity-10 blur-none rounded-xl transition-colors duration-500 ${data.price > Number(data.sma) ? "bg-green-500" : "bg-red-500"}`} />
 
@@ -258,7 +306,7 @@ export default function Home() {
                           {data.price > Number(data.sma) ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
                         </div>
                         <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Trend Arah Pasar</span>
-                        <AcademyTooltip text="Garis SMA 50 adalah 'Rata-rata Harga'. Jika harga sekarang di atas rata-rata, berarti pasar sedang SEMANGAT NAIK." />
+                        <AcademyTooltip text="Garis Tren Utama (SMA 50). Jika Harga bertahan di atas garis ini, fase Bullish (Naik) masih valid. Jika di bawah, waspada Bearish." />
                       </div>
 
                       <div className="flex flex-col">
@@ -279,6 +327,7 @@ export default function Home() {
                   </div>
                 </div>
 
+                {/* TOMBOL ACTION (Di bawah semua kolom) */}
                 <div className="col-span-1 lg:col-span-3 pt-2">
                   <button
                     onClick={() => {

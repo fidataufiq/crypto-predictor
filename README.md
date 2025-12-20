@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Crypto Prediction Dashboard 🚀
 
-## Getting Started
+Ini adalah proyek **Crypto Prediction Dashboard** yang dibangun menggunakan [Next.js](https://nextjs.org) (App Router). Aplikasi ini bertujuan untuk memvisualisasikan data pasar cryptocurrency secara real-time dan menyajikan prediksi harga masa depan berdasarkan analisis data historis (atau model Machine Learning).
 
-First, run the development server:
+## 🌟 Fitur Utama
+
+- **Real-time Data Tracking:** Memantau harga mata uang kripto terkini (Bitcoin, Ethereum, dll).
+- **Price Prediction:** Visualisasi prediksi pergerakan harga untuk 7 hari atau 30 hari ke depan.
+- **Interactive Charts:** Grafik interaktif menggunakan [Recharts/Chart.js] untuk analisis teknikal.
+- **Market Sentiment:** (Opsional) Analisis sentimen pasar (Bearish/Bullish).
+- **Responsive Design:** Tampilan optimal di desktop dan mobile.
+
+## 🛠 Teknologi yang Digunakan
+
+- **Framework:** [Next.js 16+](https://nextjs.org) (App Router & Server Actions)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **Charts:** [Recharts / Chart.js / TradingView Lightweight Charts]
+- **Data Fetching:** [TanStack Query / Axios / Fetch API]
+- **Crypto API:** [CoinGecko / Binance API / CoinMarketCap]
+- **Font:** [Geist](https://vercel.com/font)
+
+---
+
+## ⚙️ Persiapan Awal (Prerequisites)
+
+Sebelum menjalankan proyek, pastikan Anda memiliki API Key (jika menggunakan CoinMarketCap atau layanan berbayar lainnya).
+
+1.  Duplikat file environment:
+    ```bash
+    cp .env.example .env.local
+    ```
+2.  Isi variabel environment di `.env.local`:
+    ```env
+    NEXT_PUBLIC_API_URL=[https://api.coingecko.com/api/v3](https://api.coingecko.com/api/v3)
+    # NEXT_PUBLIC_API_KEY=your_api_key_here (jika diperlukan)
+    ```
+
+---
+
+## 🚀 Cara Menjalankan (Getting Started)
+
+Pertama, install dependency yang diperlukan:
 
 ```bash
-npm run dev
+npm install
 # or
-yarn dev
+yarn install
 # or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Kemudian, jalankan development server:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+npm run dev
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# or
 
-## Learn More
+yarn dev
 
-To learn more about Next.js, take a look at the following resources:
+# or
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+pnpm dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# or
 
-## Deploy on Vercel
+bun dev
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Buka http://localhost:3000 di browser Anda untuk melihat hasilnya.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📂 Struktur Proyek
+
+app/: Halaman dan routing aplikasi (App Router).
+
+components/: Komponen UI yang dapat digunakan kembali (Charts, Cards, Tables).
+
+lib/ atau utils/: Fungsi utilitas untuk memformat harga atau kalkulasi prediksi.
+
+hooks/: Custom React Hooks untuk fetching data crypto.
+
+types/: Definisi TypeScript interface untuk respon API.

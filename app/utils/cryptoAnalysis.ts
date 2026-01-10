@@ -1,8 +1,9 @@
 import axios from "axios";
-// 1. IMPORT BOLLINGER BANDS dari library
 import { RSI, SMA, MACD, BollingerBands } from "technicalindicators";
 
-// --- DAFTAR KOIN LENGKAP (UPDATED) ---
+// =====================
+// COIN LIST (BINANCE)
+// =====================
 export const COINS = [
   { symbol: "BTCUSDT", name: "Bitcoin", category: "Major Assets" },
   { symbol: "ETHUSDT", name: "Ethereum", category: "Major Assets" },
@@ -39,6 +40,7 @@ export const COINS = [
   { symbol: "WIFUSDT", name: "WIF", category: "Meme" },
   { symbol: "BONKUSDT", name: "Bonk", category: "Meme" },
 ];
+
 export type Timeframe = "SHORT" | "MEDIUM" | "LONG";
 
 export interface CryptoAnalysisResult {

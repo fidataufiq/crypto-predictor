@@ -1,5 +1,16 @@
 export const changelogData = [
   {
+    version: "v1.7.1",
+    date: "08 Jan 2026",
+    title: "Exchange Link Routing Update",
+    type: "Improvement",
+    description: "Pembaruan sistem tautan untuk menghubungkan setiap aset langsung ke halaman exchange terkait.",
+    details: [
+      "Per-Exchange Deep Link: Menambahkan URL spesifik ke masing-masing exchange (OKX, Bybit, dll) agar pengguna langsung diarahkan ke halaman trading aset terkait.",
+      "UX Flow Enhancement: Mengurangi friction dari analisis ke eksekusi dengan satu klik langsung ke exchange tujuan.",
+    ],
+  },
+  {
     version: "v1.7.0",
     date: "27 Dec 2025",
     title: "Asset Universe Expansion: The 2025 List",

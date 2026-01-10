@@ -7,10 +7,10 @@ import CopyButton from "../components/CopyButton";
 
 // --- KONFIGURASI LINK AFFILIATE ---
 const EXCHANGES = [
-  { name: "OKX", url: "https://www.okx.com/", color: "hover:border-white/40 hover:bg-white/5", label: "Global Pro" },
-  { name: "BYBIT", url: "https://www.bybit.com/", color: "hover:border-yellow-500/40 hover:bg-yellow-500/5", label: "Futures King" },
+  { name: "OKX", url: "https://okx.ac/join/91745600", color: "hover:border-white/40 hover:bg-white/5", label: "Global Pro" },
+  { name: "BYBIT", url: "https://www.bybit.com/invite?ref=J5QYYX", color: "hover:border-yellow-500/40 hover:bg-yellow-500/5", label: "Futures King" },
   { name: "TRIV", url: "https://triv.co.id/", color: "hover:border-blue-500/40 hover:bg-blue-500/5", label: "Indonesian Reg" },
-  { name: "FLOX", url: "#", color: "hover:border-violet-500/40 hover:bg-violet-500/5", label: "New Gem" },
+  { name: "FLOX", url: "#", color: "hover:border-violet-500/40 hover:bg-violet-500/5", label: "Referal : taqtrader07" },
 ];
 
 export default function RecommendationPage() {

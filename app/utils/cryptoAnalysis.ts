@@ -4,52 +4,44 @@ import { RSI, SMA, MACD, BollingerBands } from "technicalindicators";
 
 // --- DAFTAR KOIN LENGKAP (UPDATED) ---
 export const COINS = [
-  // 💎 MAJOR ASSETS (Blue Chips)
   { id: "bitcoin", name: "Bitcoin", symbol: "BTC", category: "Major Assets", image: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png" },
   { id: "ethereum", name: "Ethereum", symbol: "ETH", category: "Major Assets", image: "https://assets.coingecko.com/coins/images/279/large/ethereum.png" },
   { id: "solana", name: "Solana", symbol: "SOL", category: "Major Assets", image: "https://assets.coingecko.com/coins/images/4128/large/solana.png" },
   { id: "binancecoin", name: "BNB", symbol: "BNB", category: "Major Assets", image: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png" },
-  { id: "the-open-network", name: "Toncoin", symbol: "TON", category: "Major Assets", image: "https://assets.coingecko.com/coins/images/17980/large/ton_symbol.png" }, // BARU: Telegram Ecosystem
+  { id: "the-open-network", name: "Toncoin", symbol: "TON", category: "Major Assets", image: "https://assets.coingecko.com/coins/images/17980/large/ton_symbol.png" },
 
-  // 🔥 NEW & TRENDING
   { id: "hyperliquid", name: "Hyperliquid", symbol: "HYPE", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/35534/large/hyperliquid.png" },
   { id: "sui", name: "Sui", symbol: "SUI", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/26375/large/sui_asset.jpeg" },
-  { id: "sei-network", name: "Sei", symbol: "SEI", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/28205/large/Sei_Logo_Full_Gradient.png" }, // BARU: Parallel EVM
-  { id: "celestia", name: "Celestia", symbol: "TIA", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/31967/large/tia.png" }, // BARU: Modular Blockchain
-  { id: "kaspa", name: "Kaspa", symbol: "KAS", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/25751/large/kaspa.png" }, // BARU: PoW Speed
+  { id: "sei-network", name: "Sei", symbol: "SEI", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/28205/large/Sei_Logo_Full_Gradient.png" },
+  { id: "celestia", name: "Celestia", symbol: "TIA", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/31967/large/tia.png" },
+  { id: "kaspa", name: "Kaspa", symbol: "KAS", category: "New & Trending", image: "https://assets.coingecko.com/coins/images/25751/large/kaspa.png" },
 
-  // 🤖 AI & DePIN (Sektor Panas)
   { id: "render-token", name: "Render", symbol: "RNDR", category: "AI & DePIN", image: "https://assets.coingecko.com/coins/images/11636/large/rndr.png" },
-  { id: "fetch-ai", name: "Artificial Alliance", symbol: "FET", category: "AI & DePIN", image: "https://assets.coingecko.com/coins/images/5624/large/fet.png" }, // BARU: AI Agent Leader
-  { id: "near", name: "NEAR Protocol", symbol: "NEAR", category: "AI & DePIN", image: "https://assets.coingecko.com/coins/images/10365/large/near.png" }, // BARU: AI Pivot
-  { id: "internet-computer", name: "ICP", symbol: "ICP", category: "AI & DePIN", image: "https://assets.coingecko.com/coins/images/14495/large/Internet_Computer_logo.png" }, // BARU: Cloud Compute
+  { id: "fetch-ai", name: "Artificial Alliance", symbol: "FET", category: "AI & DePIN", image: "https://assets.coingecko.com/coins/images/5624/large/fet.png" },
+  { id: "near", name: "NEAR Protocol", symbol: "NEAR", category: "AI & DePIN", image: "https://assets.coingecko.com/coins/images/10365/large/near.png" },
+  { id: "internet-computer", name: "ICP", symbol: "ICP", category: "AI & DePIN", image: "https://assets.coingecko.com/coins/images/14495/large/Internet_Computer_logo.png" },
 
-  // 🏦 RWA & DEFI (Real World Assets)
-  { id: "ondo-finance", name: "Ondo", symbol: "ONDO", category: "RWA & DeFi", image: "https://assets.coingecko.com/coins/images/27525/large/ondo.png" }, // BARU: RWA Leader
-  { id: "injective-protocol", name: "Injective", symbol: "INJ", category: "RWA & DeFi", image: "https://assets.coingecko.com/coins/images/12882/large/secondary_symbol.png" }, // BARU: Finance L1
+  { id: "ondo-finance", name: "Ondo", symbol: "ONDO", category: "RWA & DeFi", image: "https://assets.coingecko.com/coins/images/27525/large/ondo.png" },
+  { id: "injective-protocol", name: "Injective", symbol: "INJ", category: "RWA & DeFi", image: "https://assets.coingecko.com/coins/images/12882/large/secondary_symbol.png" },
   { id: "chainlink", name: "Chainlink", symbol: "LINK", category: "Oracle / Infra", image: "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png" },
-  { id: "uniswap", name: "Uniswap", symbol: "UNI", category: "RWA & DeFi", image: "https://assets.coingecko.com/coins/images/12504/large/uniswap-uni.png" }, // BARU: DEX King
+  { id: "uniswap", name: "Uniswap", symbol: "UNI", category: "RWA & DeFi", image: "https://assets.coingecko.com/coins/images/12504/large/uniswap-uni.png" },
 
-  // 🏗️ INFRASTRUCTURE & LAYER 2
   { id: "ripple", name: "XRP", symbol: "XRP", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png" },
   { id: "cardano", name: "Cardano", symbol: "ADA", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/975/large/cardano.png" },
   { id: "avalanche-2", name: "Avalanche", symbol: "AVAX", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png" },
   { id: "polkadot", name: "Polkadot", symbol: "DOT", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/12171/large/polkadot.png" },
   { id: "matic-network", name: "Polygon", symbol: "POL", category: "Infrastructure", image: "https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png" },
-  { id: "arbitrum", name: "Arbitrum", symbol: "ARB", category: "Layer 2", image: "https://assets.coingecko.com/coins/images/16547/large/arbitrum.png" }, // BARU: L2 Leader
-  { id: "optimism", name: "Optimism", symbol: "OP", category: "Layer 2", image: "https://assets.coingecko.com/coins/images/25244/large/Optimism.png" }, // BARU: Superchain
+  { id: "arbitrum", name: "Arbitrum", symbol: "ARB", category: "Layer 2", image: "https://assets.coingecko.com/coins/images/16547/large/arbitrum.png" },
+  { id: "optimism", name: "Optimism", symbol: "OP", category: "Layer 2", image: "https://assets.coingecko.com/coins/images/25244/large/Optimism.png" },
 
-  // 🚀 MEME COINS
   { id: "dogecoin", name: "Dogecoin", symbol: "DOGE", category: "Meme Economy", image: "https://assets.coingecko.com/coins/images/5/large/dogecoin.png" },
   { id: "shiba-inu", name: "Shiba Inu", symbol: "SHIB", category: "Meme Economy", image: "https://assets.coingecko.com/coins/images/11939/large/shiba.png" },
   { id: "pepe", name: "Pepe", symbol: "PEPE", category: "Meme Economy", image: "https://assets.coingecko.com/coins/images/29850/large/pepe-token.jpeg" },
-  { id: "dogwifcoin", name: "dogwifhat", symbol: "WIF", category: "Meme Economy", image: "https://assets.coingecko.com/coins/images/33566/large/dogwifhat.jpg" }, // BARU: Solana Meme King
-  { id: "bonk", name: "Bonk", symbol: "BONK", category: "Meme Economy", image: "https://assets.coingecko.com/coins/images/28600/large/bonk.jpg" }, // BARU: Solana Meme
+  { id: "dogwifcoin", name: "dogwifhat", symbol: "WIF", category: "Meme Economy", image: "https://assets.coingecko.com/coins/images/33566/large/dogwifhat.jpg" },
+  { id: "bonk", name: "Bonk", symbol: "BONK", category: "Meme Economy", image: "https://assets.coingecko.com/coins/images/28600/large/bonk.jpg" },
 ];
-
 export type Timeframe = "SHORT" | "MEDIUM" | "LONG";
 
-// Interface untuk Return Data agar TypeScript aman
 export interface CryptoAnalysisResult {
   price: number;
   chartData: any[];
@@ -60,7 +52,6 @@ export interface CryptoAnalysisResult {
     signal: string;
     histogram: string;
   };
-  // 2. TAMBAHKAN Interface BB
   bb: {
     upper: number;
     middle: number;
@@ -74,110 +65,92 @@ export interface CryptoAnalysisResult {
   sentimentScore: number;
 }
 
-export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "MEDIUM"): Promise<CryptoAnalysisResult | null> {
+// =====================
+// MAIN FUNCTION
+// =====================
+export async function getCryptoAnalysis(symbol: string, timeframe: Timeframe = "MEDIUM"): Promise<CryptoAnalysisResult | null> {
   try {
-    // 1. Tentukan Durasi Chart (OHLC)
-    let days = "30";
-    if (timeframe === "SHORT") days = "1";
-    if (timeframe === "LONG") days = "365";
+    let interval = "1d";
+    let limit = 100;
 
-    // --- REQUEST 1: HARGA REAL-TIME ---
-    const priceUrl = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coinId}&order=market_cap_desc&per_page=1&page=1&sparkline=false`;
-
-    // --- REQUEST 2: DATA CHART (OHLC) ---
-    const ohlcUrl = `https://api.coingecko.com/api/v3/coins/${coinId}/ohlc?vs_currency=usd&days=${days}`;
-
-    const [priceRes, ohlcRes] = await Promise.all([axios.get(priceUrl), axios.get(ohlcUrl)]);
-
-    // --- PROSES HARGA ---
-    const marketData = priceRes.data[0];
-    if (!marketData) throw new Error("NOT_FOUND");
-
-    const currentPrice = marketData.current_price;
-
-    // --- PROSES CHART (OHLC Data) ---
-    const rawData = ohlcRes.data;
-
-    // Validasi data chart
-    if (!rawData || rawData.length < 20) {
-      // BB butuh minimal 20 data
-      console.warn(`Data chart ${coinId} kurang untuk analisis.`);
-      return null;
+    if (timeframe === "SHORT") {
+      interval = "15m";
+      limit = 96;
+    }
+    if (timeframe === "LONG") {
+      interval = "1d";
+      limit = 365;
     }
 
-    const closePrices = rawData.map((d: any) => d[4]);
+    // =====================
+    // BINANCE API
+    // =====================
+    const priceUrl = `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`;
+    const klineUrl = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
 
-    // Siapkan Data Chart untuk UI
-    const chartData = rawData.map((d: any) => ({
-      time: d[0] / 1000,
-      open: d[1],
-      high: d[2],
-      low: d[3],
-      close: d[4],
+    const [priceRes, klineRes] = await Promise.all([axios.get(priceUrl), axios.get(klineUrl)]);
+
+    const currentPrice = parseFloat(priceRes.data.price);
+    const rawData = klineRes.data;
+
+    if (!rawData || rawData.length < 50) return null;
+
+    const closePrices = rawData.map((k: any) => parseFloat(k[4]));
+
+    const chartData = rawData.map((k: any) => ({
+      time: k[0] / 1000,
+      open: +k[1],
+      high: +k[2],
+      low: +k[3],
+      close: +k[4],
     }));
 
-    // --- HITUNG INDIKATOR ---
-    // 1. RSI
-    const rsiValues = RSI.calculate({ values: closePrices, period: 14 });
-    const currentRSI = rsiValues[rsiValues.length - 1] || 50;
+    // =====================
+    // INDICATORS
+    // =====================
+    const rsiVal = RSI.calculate({ values: closePrices, period: 14 }).pop() ?? 50;
+    const smaVal = SMA.calculate({ values: closePrices, period: 50 }).pop() ?? currentPrice;
 
-    // 2. SMA
-    const smaValues = SMA.calculate({ values: closePrices, period: 50, SimpleMovingAverage: [] } as any);
-    const currentSMA = smaValues[smaValues.length - 1] || currentPrice;
-
-    // 3. MACD
-    const macdInput = {
+    const macdRaw = MACD.calculate({
       values: closePrices,
       fastPeriod: 12,
       slowPeriod: 26,
       signalPeriod: 9,
       SimpleMAOscillator: false,
       SimpleMASignal: false,
-    } as any;
-    const macdValues = MACD.calculate(macdInput);
-    const currentMACD = macdValues[macdValues.length - 1] || { MACD: 0, signal: 0, histogram: 0 };
+    }).pop();
 
-    // 4. BOLLINGER BANDS (BARU)
-    // Periode standar 20, Deviasi standar 2
-    const bbValues = BollingerBands.calculate({ period: 20, values: closePrices, stdDev: 2 });
-    const currentBB = bbValues[bbValues.length - 1] || { upper: 0, middle: 0, lower: 0 };
+    // 🔒 FIX TS ERROR HERE
+    const macdVal = {
+      MACD: macdRaw?.MACD ?? 0,
+      signal: macdRaw?.signal ?? 0,
+      histogram: macdRaw?.histogram ?? 0,
+    };
 
-    // ==========================================
-    // --- NEW LOGIC: STRICT CONFLUENCE SCORE ---
-    // ==========================================
+    const bbRaw = BollingerBands.calculate({
+      values: closePrices,
+      period: 20,
+      stdDev: 2,
+    }).pop() ?? { upper: 0, middle: 0, lower: 0 };
 
+    // =====================
+    // SCORING SYSTEM
+    // =====================
     let score = 0;
-    const rsiVal = currentRSI;
-    const macdHist = currentMACD.histogram || 0;
-    const smaVal = currentSMA;
 
-    // 1. ANALISA RSI (Momentum)
     if (rsiVal < 30) score += 2;
     else if (rsiVal < 45) score += 1;
     else if (rsiVal > 70) score -= 2;
     else if (rsiVal > 55) score -= 1;
 
-    // 2. ANALISA MACD (Trend Direction)
-    if (macdHist > 0) score += 1;
-    else score -= 1;
+    score += macdVal.histogram > 0 ? 1 : -1;
+    score += currentPrice > smaVal ? 1 : -1;
 
-    // 3. ANALISA SMA (Trend Jangka Panjang)
-    if (currentPrice > smaVal) score += 1;
-    else score -= 1;
+    if (currentPrice <= bbRaw.lower) score += 2;
+    else if (currentPrice >= bbRaw.upper) score -= 2;
 
-    // 4. ANALISA BOLLINGER BANDS (Volatilitas / Mean Reversion)
-    // Jika harga tembus Lower Band -> Oversold Parah (Potensi Reversal Naik) -> +Score
-    if (currentPrice <= currentBB.lower) {
-      score += 2;
-    }
-    // Jika harga tembus Upper Band -> Overbought Parah (Potensi Reversal Turun) -> -Score
-    else if (currentPrice >= currentBB.upper) {
-      score -= 2;
-    }
-
-    // --- KEPUTUSAN FINAL BERDASARKAN SKOR ---
-    let signal = "NEUTRAL";
-    let sentiment = "Sideways";
+    let signal = "WAIT / HOLD";
+    let sentiment = "Indecisive";
     let color = "text-gray-400";
     let borderColor = "border-gray-500";
 
@@ -201,17 +174,9 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
       sentiment = "Bearish";
       color = "text-red-400";
       borderColor = "border-red-400";
-    } else {
-      signal = "WAIT / HOLD";
-      sentiment = "Indecisive";
-      color = "text-gray-400";
-      borderColor = "border-gray-500";
     }
 
-    const sentimentScore = currentRSI;
-
-    const now = new Date();
-    const timeString = now.toLocaleTimeString("id-ID", {
+    const timeString = new Date().toLocaleTimeString("id-ID", {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
@@ -220,37 +185,24 @@ export async function getCryptoAnalysis(coinId: string, timeframe: Timeframe = "
 
     return {
       price: currentPrice,
-      chartData: chartData,
-      rsi: currentRSI.toFixed(2),
-      sma: currentSMA.toFixed(2),
+      chartData,
+      rsi: rsiVal.toFixed(2),
+      sma: smaVal.toFixed(2),
       macd: {
-        val: currentMACD.MACD?.toFixed(2) || "0",
-        signal: currentMACD.signal?.toFixed(2) || "0",
-        histogram: currentMACD.histogram?.toFixed(2) || "0",
+        val: macdVal.MACD.toFixed(2),
+        signal: macdVal.signal.toFixed(2),
+        histogram: macdVal.histogram.toFixed(2),
       },
-      // Kembalikan Data BB
-      bb: {
-        upper: currentBB.upper,
-        middle: currentBB.middle,
-        lower: currentBB.lower,
-      },
+      bb: bbRaw,
       signal,
       sentiment,
       color,
       borderColor,
       lastUpdated: timeString,
-      sentimentScore,
+      sentimentScore: rsiVal,
     };
-  } catch (error: any) {
-    if (axios.isAxiosError(error)) {
-      if (error.response?.status === 429) {
-        console.error("⛔ API RATE LIMIT");
-      } else if (error.response?.status === 404) {
-        console.error(`⛔ Coin not found: ${coinId}`);
-      }
-    } else {
-      console.error("Analysis Error:", error);
-    }
+  } catch (err) {
+    console.error("Analysis Error:", err);
     return null;
   }
 }
